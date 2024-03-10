@@ -1,0 +1,6 @@
+[submodule "extlibs/oglwrap/include/oglwrap"]
+	path = extlibs/oglwrap/include/oglwrap
+	url = https://github.com/Tomius/oglwrap.git
+[submodule "extlibs/glm/include/glm"]
+	path = extlibs/glm/include/glm
+	url = https://github.com/g-truc/glm.git
