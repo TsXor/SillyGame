@@ -8,5 +8,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <oglwrap/oglwrap.h>
+#include "static_shaders.hpp"
 
 #endif // __OPENGL_DEPENDENCIES__

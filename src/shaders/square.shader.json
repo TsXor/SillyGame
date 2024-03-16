@@ -1,0 +1,5 @@
+{
+    "name": "square",
+    "frag": "cyan_color.frag",
+    "vert": "shrink_half.vert"
+}
