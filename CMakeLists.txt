@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.15)
 
 project(SillyGame)
 
+# 舒服一点。
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(GLFW_VERSION 3.4)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glfw-${GLFW_VERSION})

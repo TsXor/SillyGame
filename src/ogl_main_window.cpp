@@ -1,12 +1,13 @@
 #include "ogl_main_window.hpp"
 
-base_main_window::base_main_window(int width, int height) : _width(width), _height(height) {
+base_main_window::base_main_window(int width, int height, const char* title):
+_width(width), _height(height) {
     if (!glfwInit()) { throw std::runtime_error("Cannot init GLFW!"); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_RESIZABLE, false);
 
-    hwnd = glfwCreateWindow(width, height, "Example application", nullptr, nullptr);
+    hwnd = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!hwnd) { throw std::runtime_error("Cannot create GLFW window!"); }
 
     glfwMakeContextCurrent(hwnd);

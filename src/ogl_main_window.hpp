@@ -16,7 +16,7 @@ protected:
     int _width; int _height;
 
 public:
-    base_main_window(int width, int height);
+    base_main_window(int width, int height, const char* title);
     ~base_main_window();
 
     int width() { return _width; }

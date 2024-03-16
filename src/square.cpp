@@ -1,5 +1,7 @@
 #include "ogl_main_window.hpp"
 #include <oglwrap/shapes/rectangle_shape.h>
+#include <cmath>
+#include <numbers>
 
 
 class show_square {
@@ -16,10 +18,17 @@ public:
     ~show_square() = default;
 
     void render() {
-        gl::Use(shaders::programs::square());
-        // Set the clear color to grey
+        auto& prog = shaders::programs::square();
+        gl::Use(prog);
+        
+        constexpr double period = 5;
+        double theta = (fmod(glfwGetTime(), period) / period) * std::numbers::pi;
+        gl::Uniform<glm::vec2> rotate_vec(prog, "rotate");
+        rotate_vec.set(glm::vec2(cos(theta), sin(theta)));
+        
         gl::ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         rectangle_shape.render();
+        
         gl::UnuseProgram();
     }
 };
@@ -27,7 +36,7 @@ public:
 class main_window : public base_main_window {
     show_square square;
 public:
-    main_window() : base_main_window(600, 600) {}
+    main_window() : base_main_window(600, 600, "simple demo") {}
     void render() { square.render(); }
 };
 
