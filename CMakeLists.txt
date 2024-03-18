@@ -6,14 +6,17 @@ project(SillyGame)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(GLAD_VERSION 4.1-compat)
+set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glad-${GLAD_VERSION})
 set(GLFW_VERSION 3.4)
+set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glfw-${GLFW_VERSION})
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glfw-${GLFW_VERSION})
+add_subdirectory(${GLFW_DIR})
 
 
 function(add_gl_deps TARGET)
-    target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glad/include)
-    target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glad/src/glad.c)
+    target_include_directories(${TARGET} PRIVATE ${GLAD_DIR}/include)
+    target_sources(${TARGET} PRIVATE ${GLAD_DIR}/src/glad.c)
     target_link_libraries(${TARGET} glfw)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glm/include/glm)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/oglwrap/include)
