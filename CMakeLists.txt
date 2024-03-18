@@ -19,6 +19,12 @@ function(add_gl_deps TARGET)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/oglwrap/include)
 endfunction(add_gl_deps)
 
+function(mingw_static_lib target_name)
+    if(MINGW)
+        target_link_libraries(${target_name} -static gcc stdc++ winpthread -dynamic)
+    endif()
+endfunction()
+
 function(set_nocmd TARGET)
     if(WIN32)
         if(MSVC)
@@ -31,5 +37,6 @@ endfunction(set_nocmd)
 
 
 add_executable(SillyGame src/square.cpp src/ogl_main_window.cpp)
-add_gl_deps(SillyGame)
+mingw_static_lib(SillyGame)
 set_nocmd(SillyGame)
+add_gl_deps(SillyGame)

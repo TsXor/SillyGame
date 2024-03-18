@@ -17,17 +17,19 @@ public:
     }
     ~show_square() = default;
 
-    void render() {
+    void render(base_main_window* wnd) {
         auto& prog = shaders::programs::square();
         gl::Use(prog);
         
+        gl::ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
         constexpr double period = 5;
         double theta = (fmod(glfwGetTime(), period) / period) * std::numbers::pi;
         gl::Uniform<glm::vec2> rotate_vec(prog, "rotate");
         rotate_vec.set(glm::vec2(cos(theta), sin(theta)));
-        
-        gl::ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        wnd->center_viewport(600, 600);
         rectangle_shape.render();
+        wnd->full_viewport();
         
         gl::UnuseProgram();
     }
@@ -36,8 +38,8 @@ public:
 class main_window : public base_main_window {
     show_square square;
 public:
-    main_window() : base_main_window(600, 600, "simple demo") {}
-    void render() { square.render(); }
+    main_window() : base_main_window("simple demo", 60) {}
+    void render() { square.render(this); }
 };
 
 int main() {
