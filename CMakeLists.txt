@@ -20,6 +20,7 @@ function(add_gl_deps TARGET)
     target_link_libraries(${TARGET} glfw)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glm/include/glm)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/oglwrap/include)
+    target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/stb)
 endfunction(add_gl_deps)
 
 function(mingw_static_lib target_name)
@@ -39,7 +40,8 @@ function(set_nocmd TARGET)
 endfunction(set_nocmd)
 
 
-add_executable(SillyGame src/square.cpp src/ogl_main_window.cpp)
+file(GLOB PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+add_executable(SillyGame ${PROJECT_SOURCES})
 mingw_static_lib(SillyGame)
 set_nocmd(SillyGame)
 add_gl_deps(SillyGame)
