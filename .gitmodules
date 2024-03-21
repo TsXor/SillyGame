@@ -7,3 +7,12 @@
 [submodule "extlibs/stb"]
 	path = extlibs/stb
 	url = https://github.com/nothings/stb.git
+[submodule "extlibs/uv-cpp"]
+	path = extlibs/uv-cpp
+	url = https://github.com/TsXor/uv-cpp.git
+[submodule "extlibs/libuv"]
+	path = extlibs/libuv
+	url = https://github.com/libuv/libuv
+[submodule "extlibs/spdlog"]
+	path = extlibs/spdlog
+	url = https://github.com/gabime/spdlog.git
