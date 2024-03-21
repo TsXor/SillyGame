@@ -18,9 +18,10 @@ class base_main_window {
 protected:
     GLFWwindow *hwnd;
     int _fps_limit;
+    int _poll_interval_ms;
 
 public:
-    base_main_window(const char* title, int fps_limit);
+    base_main_window(const char* title, int fps_limit, int poll_interval_ms);
     ~base_main_window();
 
     std::tuple<int, int> size();

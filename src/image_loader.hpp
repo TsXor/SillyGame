@@ -8,10 +8,14 @@ struct stb_decoded_image_view {
 };
 
 struct stb_decoded_image : stb_decoded_image_view {
-    stb_decoded_image(const byte* data_start, const byte* data_end);
+    stb_decoded_image();
+    stb_decoded_image(const byte* data, size_t data_len);
     ~stb_decoded_image();
     stb_decoded_image(const stb_decoded_image&) = delete;
+    stb_decoded_image& operator=(const stb_decoded_image&) = delete;
     stb_decoded_image(stb_decoded_image&& other);
+    stb_decoded_image& operator=(stb_decoded_image&& other);
+    bool empty() { return data == nullptr; }
 };
 
 #endif // _IMAGE_LOADER__

@@ -1,8 +1,10 @@
 #include "ogl_main_window.hpp"
 #include <algorithm>
+#include <thread>
 
 
-base_main_window::base_main_window(const char* title, int fps_limit) : _fps_limit(fps_limit) {
+base_main_window::base_main_window(const char* title, int fps_limit, int poll_interval_ms):
+_fps_limit(fps_limit), _poll_interval_ms(poll_interval_ms) {
     if (!glfwInit()) { throw std::runtime_error("Cannot init GLFW!"); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -59,5 +61,6 @@ void base_main_window::run() {
             have_prepared_frame = false;
         }
         glfwPollEvents();
+        std::this_thread::sleep_for(std::chrono::milliseconds(_poll_interval_ms));
     }
 }

@@ -1,5 +1,5 @@
 {
     "name": "square",
-    "frag": "cyan_color.frag",
+    "frag": "use_texture.frag",
     "vert": "transform_shape.vert"
 }
