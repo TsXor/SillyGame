@@ -1,7 +1,11 @@
+#pragma once
+#ifndef __IO_RESOURCE_LOADER__
+#define __IO_RESOURCE_LOADER__
+
 #include <thread>
 #include <atomic>
 #include <uvpp.hpp>
-#include "image_loader.hpp"
+#include "utilities/stb_image_wrap.hpp"
 
 struct res_loader_thread {
     uvpp::loop uvloop;
@@ -17,6 +21,8 @@ struct res_loader_thread {
     void join() { runner.join(); }
     void stop() { running = false; }
     void kill() { stop(); uvloop.stop(); }
+
+    uvco::coro_fn<std::optional<stb_decoded_image>> load_image(const char* filename);
 };
 
-uvco::coro_fn<void> load_image(uv_loop_t* loop, const char* filename, stb_decoded_image& out_image);
+#endif // __IO_RESOURCE_LOADER__

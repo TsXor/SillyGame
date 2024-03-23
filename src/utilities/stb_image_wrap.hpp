@@ -5,6 +5,7 @@
 struct stb_decoded_image_view {
     using byte = unsigned char;
     int width, height, n_channels; byte* data;
+    size_t mem_size() { return width * height * n_channels; }
 };
 
 struct stb_decoded_image : stb_decoded_image_view {

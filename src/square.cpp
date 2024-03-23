@@ -28,12 +28,13 @@ public:
         (prog | "tex_coord").bindLocation(gl::RectangleShape::kTexCoord);
         gl::UniformSampler(prog, "tex") = 0;
 
-        stb_decoded_image img;
-        uvco::run_join(load_image(res_loader.uvloop, "res/char.png", img));
-        gl::Bind(texture);
-        texture.upload(gl::kSrgb8Alpha8, img.width, img.height, gl::kRgba, gl::kUnsignedByte, img.data);
-        texture.minFilter(gl::kNearest); texture.magFilter(gl::kNearest);
-        gl::Unbind(texture);
+        auto img = uvco::run_join(res_loader.load_image("res/char.png"));
+        if (img) {
+            gl::Bind(texture);
+            texture.upload(gl::kSrgb8Alpha8, img->width, img->height, gl::kRgba, gl::kUnsignedByte, img->data);
+            texture.minFilter(gl::kNearest); texture.magFilter(gl::kNearest);
+            gl::Unbind(texture);
+        }
     }
     ~show_square() = default;
 
@@ -69,14 +70,17 @@ public:
 };
 
 int main(int argc, char** argv) {
+    // Windows特有的字符编码仪式
     uvpp::make_windows_encoding_happy(argc, argv);
+    // 切换到程序文件所在文件夹
     std::filesystem::path program_path(argv[0]);
     std::filesystem::current_path(program_path.parent_path());
+    // 设置默认日志记录器
     spdlog::set_default_logger(spdlog::basic_logger_mt("default_logger", "silly.log", true));
+    
+    // 启动资源加载器和主窗口
     res_loader.start();
-    
     main_window().run();
-    
     res_loader.stop();
     res_loader.join();
     return 0;

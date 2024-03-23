@@ -1,7 +1,7 @@
 #include <vector>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include "image_loader.hpp"
+#include "stb_image_wrap.hpp"
 
 
 stb_decoded_image::stb_decoded_image(): stb_decoded_image_view{0, 0, 0, nullptr} {}

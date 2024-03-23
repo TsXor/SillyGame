@@ -3,8 +3,8 @@
 #include <thread>
 
 
-base_main_window::base_main_window(const char* title, int fps_limit, int poll_interval_ms):
-_fps_limit(fps_limit), _poll_interval_ms(poll_interval_ms) {
+base_main_window::base_main_window(const char* title, int fps_limit_, int poll_interval_ms_):
+fps_limit(fps_limit_), poll_interval_ms(poll_interval_ms_) {
     if (!glfwInit()) { throw std::runtime_error("Cannot init GLFW!"); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -55,12 +55,12 @@ void base_main_window::run() {
         }
         // 如果距离上次显示渲染内容已经过了1/fps，那么
         // 交换缓冲区显示渲染内容并标记渲染的帧已使用
-        if (glfwGetTime() - last_render_time >= (1.0 / (double)_fps_limit)) {
+        if (glfwGetTime() - last_render_time >= (1.0 / (double)fps_limit)) {
             glfwSwapBuffers(hwnd);
             last_render_time = glfwGetTime();
             have_prepared_frame = false;
         }
         glfwPollEvents();
-        std::this_thread::sleep_for(std::chrono::milliseconds(_poll_interval_ms));
+        std::this_thread::sleep_for(std::chrono::milliseconds(poll_interval_ms));
     }
 }

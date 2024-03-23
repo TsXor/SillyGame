@@ -42,7 +42,7 @@ function(make_windows_compiler_happy TARGET)
 endfunction(make_windows_compiler_happy)
 
 
-file(GLOB PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_executable(SillyGame ${PROJECT_SOURCES})
 make_windows_compiler_happy(SillyGame)
 add_gl_deps(SillyGame)

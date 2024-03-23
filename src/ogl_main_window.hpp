@@ -2,8 +2,8 @@
 #ifndef __OGL_MAINWIN__
 #define __OGL_MAINWIN__
 
-#include "ogl_deps.hpp"
 #include <tuple>
+#include "ogl_deps.hpp"
 
 
 /**
@@ -17,11 +17,10 @@
 class base_main_window {
 protected:
     GLFWwindow *hwnd;
-    int _fps_limit;
-    int _poll_interval_ms;
+    int fps_limit, poll_interval_ms;
 
 public:
-    base_main_window(const char* title, int fps_limit, int poll_interval_ms);
+    base_main_window(const char* title, int fps_limit_, int poll_interval_ms_);
     ~base_main_window();
 
     std::tuple<int, int> size();
