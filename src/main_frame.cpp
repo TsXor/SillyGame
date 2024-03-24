@@ -1,13 +1,9 @@
 #include "globals.hpp"
 #include "main_frame.hpp"
+#include "facilities/static_shaders.hpp"
 
 
-show_square::show_square(): rectangle_shape({gl::RectangleShape::kPosition, gl::RectangleShape::kTexCoord}) {
-    auto& prog = shaders::programs::square();
-    (prog | "pos").bindLocation(gl::RectangleShape::kPosition);
-    (prog | "tex_coord").bindLocation(gl::RectangleShape::kTexCoord);
-    gl::UniformSampler(prog, "tex") = 0;
-}
+show_square::show_square(): rectangle_shape({gl::RectangleShape::kPosition, gl::RectangleShape::kTexCoord}) {}
 show_square::~show_square() = default;
 
 void show_square::render(){

@@ -1,5 +1,8 @@
 {
     "name": "square",
-    "frag": "use_texture.frag",
-    "vert": "transform_shape.vert"
+    "files": [
+        "use_texture.frag",
+        "transform_shape.vert"
+    ],
+    "inits": "default"
 }

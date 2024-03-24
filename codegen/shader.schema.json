@@ -1,9 +1,28 @@
 {
+    "title": "着色器资源文件",
+    "description": "规约用于自动生成静态着色器代码的JSON文件",
     "type": "object",
     "properties": {
-        "name": { "type": "string" },
-        "frag": { "type": "string" },
-        "vert": { "type": "string" }
+        "name": {
+            "description": "着色器名称",
+            "type": "string"
+        },
+        "files": {
+            "description": "关联的着色器代码的文件名列表",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "inits": {
+            "description": "用于初始化着色器的函数名称列表",
+            "anyOf": [
+                { "enum": ["default"] },
+                { "type": "array", "items": { "type": "string" } }
+            ]
+        },
+        "inherits": {
+            "description": "继承的着色器的名称（尚未实现）",
+            "type": "string"
+        }
     },
-    "required": ["name"]
+    "required": ["name", "files"]
 }
