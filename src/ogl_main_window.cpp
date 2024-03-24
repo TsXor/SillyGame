@@ -18,9 +18,15 @@ fps_limit(fps_limit_), poll_interval_ms(poll_interval_ms_) {
 
     glfwMakeContextCurrent(hwnd);
     if (!gladLoadGL()) { throw std::runtime_error("Cannot do load OpenGL with GLAD!"); }
+
+    resldr.start();
 }
 
-base_main_window::~base_main_window() { glfwTerminate(); }
+base_main_window::~base_main_window() {
+    resldr.stop();
+    resldr.join();
+    glfwTerminate();
+}
 
 std::tuple<int, int> base_main_window::size() {
     std::tuple<int, int> result;
@@ -47,6 +53,8 @@ void base_main_window::run() {
     double last_render_time = glfwGetTime();
     bool have_prepared_frame = false;
     while (!glfwWindowShouldClose(hwnd)) {
+        // 加载纹理
+        texman.main_window_job();
         // 如果之前渲染的帧用掉了，那么渲染一帧新的
         if (!have_prepared_frame) {
             gl::Clear().Color().Depth();

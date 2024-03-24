@@ -4,6 +4,8 @@
 
 #include <tuple>
 #include "ogl_deps.hpp"
+#include "res_loader.hpp"
+#include "texture_manager.hpp"
 
 
 /**
@@ -18,6 +20,8 @@ class base_main_window {
 protected:
     GLFWwindow *hwnd;
     int fps_limit, poll_interval_ms;
+    res_loader_thread resldr;
+    texture_manager texman;
 
 public:
     base_main_window(const char* title, int fps_limit_, int poll_interval_ms_);
@@ -29,6 +33,16 @@ public:
     
     void run();
     virtual void render() = 0;
+
+    // 详见texture_manager
+    std::optional<gl::Texture2D> wait_texture(const char* path) { return texman.wait_texture(resldr, path); }
+    // 详见texture_manager
+    void want_texture(const char* path) { return texman.want_texture(resldr, path); }
+    // 使用指定路径的纹理，如果未加载完成，不使用任何纹理
+    void use_texture(const char* path) {
+        auto tex = texman.get_texture(path);
+        if (tex) { gl::Bind(*tex); } else { glBindTexture(GL_TEXTURE_2D, 0); }
+    }
 };
 
 
