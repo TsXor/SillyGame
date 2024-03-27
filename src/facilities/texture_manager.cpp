@@ -1,6 +1,11 @@
 #include "texture_manager.hpp"
+#include "game_window.hpp"
 #include <spdlog/spdlog.h>
 
+
+texture_manager::texture_manager(game_window& parent):
+    base_manager(parent) { add_job(loop_job); }
+texture_manager::~texture_manager() {}
 
 gl::Texture2D texture_manager::load_texture(const stb_decoded_image& img) {
     gl::Texture2D texture;
@@ -36,19 +41,19 @@ gl::Texture2D texture_manager::load_texture(const stb_decoded_image& img) {
     return texture;
 }
 
-std::optional<gl::Texture2D> texture_manager::wait_texture(res_loader_thread& loader, const char *path) {
-    auto img = uvco::run_join(loader.load_image(path));
+std::optional<gl::Texture2D> texture_manager::wait_texture(const char *path) {
+    auto img = uvco::run_join(wnd().resldr.load_image(path));
     if (img) { return load_texture(*img); } else { return std::nullopt; }
 }
 
-uvco::coro_fn<void> texture_manager::texture_to_queue(res_loader_thread& loader, const char* path) {
+uvco::coro_fn<void> texture_manager::texture_to_queue(const char* path) {
     if (gpu_textures.get(path) != nullptr) { co_return; }
     auto img_ptr = [&](){
         const std::lock_guard guard(cpu_textures_lock);
         return cpu_textures.get(path);
     }();
     if (img_ptr == nullptr) {
-        auto img = co_await loader.load_image(path);
+        auto img = co_await wnd().resldr.load_image(path);
         if (img) {
             const std::lock_guard guard(cpu_textures_lock);
             img_ptr = &cpu_textures.emplace(path, *std::move(img));
@@ -62,24 +67,25 @@ uvco::coro_fn<void> texture_manager::texture_to_queue(res_loader_thread& loader,
     texture_load_queue.emplace(path, img_ptr);
 }
 
-void texture_manager::want_texture(res_loader_thread& loader, const char* path) {
-    uvco::unleash(texture_to_queue(loader, path));
+void texture_manager::want_texture(const char* path) {
+    uvco::unleash(texture_to_queue(path));
 }
 
 gl::Texture2D* texture_manager::get_texture(const char* path) {
     return &(gpu_textures.get(path)->first);
 }
 
-void texture_manager::main_window_job() {
-    texture_load_queue.reap([&](decltype(texture_load_queue)::list_type& pending) {
+void texture_manager::loop_job(game_window& wnd) {
+    auto& self = wnd.texman;
+    self.texture_load_queue.reap([&](decltype(texture_load_queue)::list_type& pending) {
         for (auto&& info : pending) {
             auto tsize = info.second->mem_size();
-            this->gpu_textures.emplace(info.first, load_texture(*info.second), tsize);
-            this->gpu_mem += tsize;
+            self.gpu_textures.emplace(info.first, load_texture(*info.second), tsize);
+            self.gpu_mem += tsize;
         }
-        while (this->gpu_mem > gpu_mem_thresh) {
-            this->gpu_mem -= this->gpu_textures.oldest()->second;
-            this->gpu_textures.pop_oldest();
+        while (self.gpu_mem > gpu_mem_thresh) {
+            self.gpu_mem -= self.gpu_textures.oldest()->second;
+            self.gpu_textures.pop_oldest();
         }
     });
 }

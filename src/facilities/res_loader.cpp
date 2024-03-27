@@ -4,7 +4,7 @@
 #include "res_loader.hpp"
 
 
-uvco::coro_fn<std::optional<stb_decoded_image>> res_loader_thread::load_image(const char *filename) {
+uvco::coro_fn<std::optional<stb_decoded_image>> res_loader::load_image(const char *filename) {
     uvpp::fs::request open_req, stat_req, read_req, close_req;
     co_await uvco::fs::open(uvloop, open_req, filename, O_RDONLY, 0);
     if (open_req->result < 0) {

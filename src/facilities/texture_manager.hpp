@@ -5,18 +5,24 @@
 #include <unordered_map>
 #include <optional>
 #include <mutex>
-#include "ogl_deps.hpp"
+#include "utilities/ogl_deps.hpp"
 #include "res_loader.hpp"
+#include "base_manager.hpp"
 #include "utilities/swap_queue.hpp"
 #include "utilities/naive_lru.hpp"
 
-class texture_manager {
+/**
+ * 纹理管理器。管理纹理图片的加载过程。
+ * 一些细节：
+ *   - 纹理内存通过图片总大小统计
+ *   - 这个类的代码很大程度上依赖于“纹理缓存至少足够保存当前使用的纹理”这个事实。
+ *     如果纹理缓存过小，图片将不断重复加载，还可能发生一些不可预测的问题。
+ */
+class texture_manager : public base_manager {
     // GPU纹理缓存上限，单位：字节
     static constexpr size_t gpu_mem_thresh = 64 << 20; // MB
     // CPU纹理缓存上限，单位：字节
     static constexpr size_t cpu_mem_thresh = 256 << 20; // MB
-    // 注：纹理内存通过图片总大小统计
-    // 再注：这个类的代码很大程度上依赖于“纹理缓存至少足够保存当前使用的纹理”这个事实。
 
     size_t cpu_mem = 0, gpu_mem = 0;
     naive_lru<stb_decoded_image> cpu_textures;
@@ -24,19 +30,21 @@ class texture_manager {
     std::mutex cpu_textures_lock;
     swap_queue<std::pair<std::string_view, stb_decoded_image*>> texture_load_queue;
 
-    uvco::coro_fn<void> texture_to_queue(res_loader_thread& loader, const char* path);
+    static void loop_job(game_window& wnd); // 主窗口需要执行这个函数来驱动，因为纹理只能在主线程载入GPU
+    uvco::coro_fn<void> texture_to_queue(const char* path);
 
 public:
+    texture_manager(game_window& parent);
+    ~texture_manager();
+
     // 将已读取的图片加载到GPU纹理，需要在主线程执行
     static gl::Texture2D load_texture(const stb_decoded_image& img);
     // 同步地加载指定路径的纹理，完全不使用缓存，适用于全局静态纹理
-    std::optional<gl::Texture2D> wait_texture(res_loader_thread& loader, const char* path);
+    std::optional<gl::Texture2D> wait_texture(const char* path);
     // 让IO线程加载指定路径的纹理到GPU缓存
-    void want_texture(res_loader_thread& loader, const char* path);
+    void want_texture(const char* path);
     // 获取指定路径的纹理，未加载完成时返回空指针
     gl::Texture2D* get_texture(const char* path);
-    // 主窗口需要执行这个函数来驱动，因为纹理只能在主线程载入GPU
-    void main_window_job();
 };
 
 #endif // __TEXTURE_MANAGER__
