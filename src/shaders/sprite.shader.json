@@ -1,5 +1,5 @@
 {
-    "name": "square",
+    "name": "sprite",
     "files": [
         "use_texture.frag",
         "transform_shape.vert"

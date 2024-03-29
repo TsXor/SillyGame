@@ -1,0 +1,36 @@
+{
+    "title": "2D图像素材资源文件",
+    "description": "规约用于自动生成静态2D图像素材代码的JSON文件",
+    "type": "object",
+    "properties": {
+        "file": {
+            "description": "目标文件",
+            "type": "string"
+        },
+        "sprites": {
+            "description": "文件中包含的素材列表",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "素材名称",
+                        "type": "string"
+                    },
+                    "uv": {
+                        "description": "素材uv坐标(left, right, top, bottom)",
+                        "type": "array",
+                        "items": [
+                            { "type": "integer" },
+                            { "type": "integer" },
+                            { "type": "integer" },
+                            { "type": "integer" }
+                        ]
+                    }
+                },
+                "required": ["name", "uv"]
+            }
+        }
+    },
+    "required": ["file", "sprites"]
+}

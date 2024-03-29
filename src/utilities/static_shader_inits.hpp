@@ -2,9 +2,8 @@
 
 namespace shaders::details {
 
-static inline void square_init(gl::Program& prog) {
-    (prog | "pos").bindLocation(gl::RectangleShape::kPosition);
-    (prog | "tex_coord").bindLocation(gl::RectangleShape::kTexCoord);
+static inline void sprite_init(gl::Program& prog) {
+    (prog | "vertex").bindLocation(0);
     gl::UniformSampler(prog, "tex") = 0;
 }
 

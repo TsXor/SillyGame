@@ -3,19 +3,14 @@
 #define __DEMO__
 
 #include "utilities/ogl_deps.hpp"
-#include <oglwrap/shapes/rectangle_shape.h>
 #include "facilities/iface_activity.hpp"
+#include "utilities/sprite2d_ref.hpp"
 
-struct game_window;
-
-class show_square : public iface_activity {
-private:
-    game_window& window;
-    // Defines a full screen rectangle (see oglwrap/shapes/rectangle_shape.h)
-    gl::RectangleShape rectangle_shape;
+class show_square : public base_activity {
+    sprite2d_ref spr;
 
 public:
-    show_square(game_window& window_);
+    show_square(game_window& window);
     ~show_square();
     
     virtual void render();

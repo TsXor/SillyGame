@@ -1,5 +1,4 @@
-
-// This file is generated, do not modify.
+// 这个文件是自动生成的，别改。
 
 #ifndef __STATIC_SHADERS_HPP__
 #define __STATIC_SHADERS_HPP__
@@ -34,12 +33,12 @@ static inline gl::Program&& init_program(gl::Program&& prog, OpTs... ops) {
 } // namespace utils
 
 namespace files {
-gl::ShaderSource& use_texture_frag();
-gl::ShaderSource& transform_shape_vert();
+gl::ShaderSource& transform_shape();
+gl::ShaderSource& use_texture();
 } // namespace files
 
 namespace programs {
-gl::Program& square();
+gl::Program& sprite();
 } // namespace programs
 
 } // namespace shaders
