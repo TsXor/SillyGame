@@ -1,0 +1,32 @@
+// 这个文件是自动生成的，别改。
+
+#include "static_shaders.hpp"
+#include "static_shader_inits.hpp"
+
+using namespace std::string_literals;
+
+{% for file in files %}
+gl::ShaderSource& shaders::files::{{file.name_with_spaces}}() {
+    static gl::ShaderSource source = utils::make_source(
+        {{file.name_literal}},
+        {{file.text_literal}}
+    );
+    return source;
+}
+{% endfor %}
+
+{% for program in programs %}
+gl::Program& shaders::programs::{{program.name}}() {
+    static gl::Program prog = utils::init_program(
+        utils::make_program(
+            {%- set comma = joiner(", ") %}
+            {% for file in program.files %}{{ comma() }}
+            gl::Shader({{file.type_enum}}, files::{{file.name}}())
+            {%- endfor +%}
+        ){% for init in program.inits %},
+        ::shaders::details::{{init}}
+        {% endfor %}
+    );
+    return prog;
+}
+{% endfor %}
