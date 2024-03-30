@@ -4,7 +4,18 @@
 #include "res_loader.hpp"
 
 
+void res_loader::work() {
+    while (true) {
+        needed.acquire();
+        if (!running) { break; }
+        // 自旋到uvloop真正被激活为止
+        while (!uvloop.alive()) {}
+        while (uvloop.run(UV_RUN_ONCE) != 0) {}
+    }
+}
+
 uvco::coro_fn<std::optional<stb_decoded_image>> res_loader::load_image(const char *filename) {
+    activate();
     uvpp::fs::request open_req, stat_req, read_req, close_req;
     co_await uvco::fs::open(uvloop, open_req, filename, O_RDONLY, 0);
     if (open_req->result < 0) {

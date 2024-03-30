@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <atomic>
+#include <mutex>
 #include <uvpp.hpp>
 #include "utilities/stb_image_wrap.hpp"
 
@@ -14,18 +15,17 @@ struct res_loader {
     uvpp::loop uvloop;
     std::thread runner;
     std::atomic<bool> running;
+    std::binary_semaphore needed;
 
-    res_loader() = default;
+    res_loader() : needed(0) {};
     ~res_loader() = default;
 
-    void start() {
-        running = true;
-        runner = std::thread([&](){
-            while (running) { uvloop.run(UV_RUN_ONCE);}
-        });
-    }
+    void work();
+    // 协程开头需要调用这个函数来激活工作循环
+    void activate() { needed.release(); } 
+    void start() { running = true; runner = std::thread([&](){work();}); }
     void join() { runner.join(); }
-    void stop() { running = false; }
+    void stop() { running = false; activate(); }
     void kill() { stop(); uvloop.stop(); }
 
     uvco::coro_fn<std::optional<stb_decoded_image>> load_image(const char* filename);
