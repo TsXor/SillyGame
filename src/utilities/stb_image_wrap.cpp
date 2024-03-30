@@ -7,7 +7,8 @@
 stb_decoded_image::stb_decoded_image(): stb_decoded_image_view{0, 0, 0, nullptr} {}
 
 stb_decoded_image::stb_decoded_image(const byte* raw_data, size_t raw_data_len) {
-    data = stbi_load_from_memory(raw_data, raw_data_len, &width, &height, &n_channels, 0);
+    // 可能是后面也写反了，总之在这里x是高度，y是宽度
+    data = stbi_load_from_memory(raw_data, raw_data_len, &height, &width, &n_channels, 0);
 }
 
 stb_decoded_image::~stb_decoded_image() {
