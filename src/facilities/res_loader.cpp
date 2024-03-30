@@ -7,9 +7,8 @@
 void res_loader::work() {
     while (true) {
         needed.acquire();
-        if (!running) { break; }
         // 自旋到uvloop真正被激活为止
-        while (!uvloop.alive()) {}
+        do { if (!running) { return; } } while (!uvloop.alive());
         while (uvloop.run(UV_RUN_ONCE) != 0) {}
     }
 }

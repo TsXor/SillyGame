@@ -26,7 +26,7 @@ struct res_loader {
     void start() { running = true; runner = std::thread([&](){work();}); }
     void join() { runner.join(); }
     void stop() { running = false; activate(); }
-    void kill() { stop(); uvloop.stop(); }
+    void kill() { uvloop.stop(); stop(); }
 
     uvco::coro_fn<std::optional<stb_decoded_image>> load_image(const char* filename);
 };
