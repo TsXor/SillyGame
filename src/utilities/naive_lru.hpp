@@ -49,6 +49,10 @@ struct naive_lru {
         return alive_list.empty() ? nullptr : &(alive_list.front().second);
     }
 
+    const std::string* oldest_name() {
+        return alive_list.empty() ? nullptr : &(alive_list.front().first);
+    }
+
     void pop_oldest() {
         lookup_dict.erase(alive_list.front().first);
         alive_list.pop_front();

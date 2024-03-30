@@ -33,11 +33,17 @@ uvco::coro_fn<void> texture_manager::texture_to_queue(const char* path) {
     texture_load_queue.emplace(path, img_ptr);
 }
 
-void texture_manager::want_texture(const char* path) {
-    uvco::unleash(texture_to_queue(path));
+void texture_manager::want_texture(const std::string& path) {
+    auto&& [path_str, not_present] = available_or_loading.emplace(path);
+    if (not_present) { uvco::unleash(texture_to_queue(path_str->c_str())); }
 }
 
-gpu_tex2d* texture_manager::get_texture(const std::string_view& path) {
+gpu_tex2d* texture_manager::get_texture(const std::string& path) {
+    want_texture(path);
+    return try_get_texture(path);
+}
+
+gpu_tex2d* texture_manager::try_get_texture(const std::string_view& path) {
     return gpu_textures.get(path);
 }
 
@@ -52,6 +58,7 @@ void texture_manager::loop_job(game_window& wnd) {
         }
         while (self.gpu_mem > gpu_mem_thresh) {
             self.gpu_mem -= self.gpu_textures.oldest()->mem_size();
+            self.available_or_loading.erase(*self.gpu_textures.oldest_name());
             self.gpu_textures.pop_oldest();
         }
     });

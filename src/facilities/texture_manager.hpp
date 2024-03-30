@@ -3,6 +3,7 @@
 #define __TEXTURE_MANAGER__
 
 #include <unordered_map>
+#include <unordered_set>
 #include <optional>
 #include <mutex>
 #include "utilities/gpu_tex_img.hpp"
@@ -29,6 +30,7 @@ class texture_manager : public base_manager {
     naive_lru<gpu_tex2d> gpu_textures;
     std::mutex cpu_textures_lock;
     swap_queue<std::pair<std::string_view, stb_decoded_image*>> texture_load_queue;
+    std::unordered_set<std::string> available_or_loading;
 
     static void loop_job(game_window& wnd);
     uvco::coro_fn<void> texture_to_queue(const char* path);
@@ -39,10 +41,14 @@ public:
 
     // 同步地加载指定路径的纹理，完全不使用缓存，适用于全局静态纹理
     std::optional<gpu_tex2d> wait_texture(const char* path);
-    // 让IO线程加载指定路径的纹理到GPU缓存
-    void want_texture(const char* path);
-    // 获取指定路径的纹理，未加载完成时返回空指针
-    gpu_tex2d* get_texture(const std::string_view& path);
+    // 尝试从缓存获取指定路径的纹理，失败时返回空指针
+    gpu_tex2d* try_get_texture(const std::string_view& path);
+    // 提示IO线程加载指定路径的纹理到GPU缓存
+    // 建议在已知将要用到某纹理时调用此函数
+    void want_texture(const std::string& path);
+    // 获取指定路径的纹理，失败时返回空指针
+    // 若未开始加载，启动加载
+    gpu_tex2d* get_texture(const std::string& path);
 };
 
 #endif // __TEXTURE_MANAGER__

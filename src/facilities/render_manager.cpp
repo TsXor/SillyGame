@@ -22,7 +22,7 @@ render_manager::render_manager(game_window& parent) : base_manager(parent) {
 }
 render_manager::~render_manager() {}
 
-void render_manager::use_texture(const std::string_view& path) {
+void render_manager::use_texture(const std::string& path) {
     auto img = wnd().texman.get_texture(path);
     if (img) { gl::Bind(img->tex); } else { glBindTexture(GL_TEXTURE_2D, 0); }
 }

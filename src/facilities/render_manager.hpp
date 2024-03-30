@@ -24,7 +24,7 @@ public:
     void vs_size(unsigned int w, unsigned int h) { vs_w = w; vs_h = h; }
 
     // 使用指定路径的纹理，如果未加载完成，不使用任何纹理
-    void use_texture(const std::string_view& path);
+    void use_texture(const std::string& path);
     // 使用占据窗口中央指定宽高比的视口
     void center_viewport(unsigned int hint_width, unsigned int hint_height);
     // 使用“虚拟屏幕”的视口
