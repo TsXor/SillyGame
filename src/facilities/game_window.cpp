@@ -4,7 +4,7 @@
 
 
 game_window::game_window(const char* title, int fps_limit_, int poll_interval_ms_):
-gl_wnd(title), fps_limit(fps_limit_), poll_interval_ms(poll_interval_ms_),
+gl_wnd(title), fps_limit(fps_limit_), poll_interval_ms(poll_interval_ms_), timer(poll_interval_ms_),
 texman(*this), actman(*this), renman(*this) { gl_wnd.use_ctx(); }
 
 game_window::~game_window() {}
@@ -32,6 +32,6 @@ void game_window::real_run() {
         // 处理事件
         gl_wnd.poll_events();
         // 等待一小会，降低CPU占用
-        std::this_thread::sleep_for(std::chrono::milliseconds(poll_interval_ms));
+        timer.wait();
     }
 }

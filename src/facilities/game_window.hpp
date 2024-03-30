@@ -5,6 +5,7 @@
 #include <list>
 #include <functional>
 #include "utilities/ogl_env.hpp"
+#include "utilities/naive_timer.hpp"
 #include "res_loader.hpp"
 #include "texture_manager.hpp"
 #include "activity_manager.hpp"
@@ -28,6 +29,7 @@ protected:
     ogl_window gl_wnd;
     int fps_limit, poll_interval_ms;
     std::list<job_type> loop_jobs;
+    naive_timer timer;
     res_jloader resldr;
 
 public:
