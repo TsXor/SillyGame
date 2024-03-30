@@ -4,8 +4,6 @@
 #include "utilities/static_shaders.hpp"
 
 
-extern const glm::mat4 eye_mat4 = glm::mat4(1.0f);
-
 static const float blit_vertices[] = {
     // pos      // tex
     0.0f, 1.0f, 0.0f, 1.0f,
@@ -17,7 +15,7 @@ static const float blit_vertices[] = {
 };
 
 render_manager::render_manager(game_window& parent) : base_manager(parent) {
-    blit_data.with_buf_do([&](gl_vertex& vert) {
+    blit_data.with_buf_do([&](glut::vertex_obj& vert) {
         gl::VertexAttrib(0).pointer(4, gl::kFloat, false, 0, 0).enable();
         vert.vbo.data(sizeof(blit_vertices), blit_vertices);
     });
@@ -48,27 +46,38 @@ void render_manager::full_viewport() {
     gl::Viewport(0, 0, cur_width, cur_height);
 }
 
-void render_manager::blit(const sprite2d& spr, const position& xy, const glm::mat4& transform) {
-    auto maybe_img = wnd().texman.get_texture(spr.file_path);
-    if (!maybe_img) { return; }
-    auto& img = *maybe_img;
-
-    // 以下操作倒着看。
-    glm::mat4 pos = glm::ortho<float>(0.0f, vs_w, vs_h, 0.0f) * transform;
-    pos = glm::translate(pos, glm::vec3(xy.left, xy.top, 0.0f)); 
-    pos = glm::scale(pos, glm::vec3(xy.width(), xy.height(), 1.0f)); 
-
+void render_manager::blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::mat4& uv) {
     auto& prog = shaders::programs::sprite(); gl::Use(prog);
     gl::Uniform<glm::mat4> var_pos_trans(prog, "pos_trans");
     gl::Uniform<glm::mat4> var_tex_trans(prog, "tex_trans");
-    var_pos_trans.set(pos);
-    var_tex_trans.set(spr.tex_mat(img.width, img.height));
-    gl::Bind(img.tex);
-    blit_data.with_obj_do([&](gl_vertex& vert) {
+    var_pos_trans.set(xy);
+    var_tex_trans.set(uv);
+    gl::Bind(tex);
+    blit_data.with_obj_do([&](glut::vertex_obj& vert) {
         gl::DrawArrays(gl::PrimType::kTriangles, 0, STATIC_ARRAY_SIZE(blit_vertices));
     });
 }
 
+void render_manager::blit(const sprite2d& spr, const position& xy, const glm::mat4& transform) {
+    auto maybe_img = wnd().texman.get_texture(spr.path());
+    if (!maybe_img) { return; }
+    auto& img = *maybe_img;
+    blit(img.tex,
+        glut::xy_trans(xy, vs_w, vs_h, transform),
+        spr.tex_mat(img.width, img.height)
+    );
+}
+
 void render_manager::blit(const sprite2d& spr, const position& xy) {
-    blit(spr, xy, eye_mat4);
+    blit(spr, xy, glut::eye4);
+}
+
+void render_manager::blit(const map2d& map, const position& uv) {
+    auto maybe_img = wnd().texman.get_texture(map.path());
+    if (!maybe_img) { return; }
+    auto& img = *maybe_img;
+    blit(img.tex,
+        glut::eye4,
+        glut::uv_trans(uv, img.width, img.height, glut::eye4)
+    );
 }

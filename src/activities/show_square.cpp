@@ -4,7 +4,7 @@
 
 
 show_square::show_square(game_window& window) : base_activity(window),
-spr{parent, sprites::self_portrait()} {
+spr{parent, sprites::container_portrait()} {
     parent.renman.vs_size(1024, 768);
 }
 
@@ -18,11 +18,8 @@ void show_square::render(){
     double ratio = period_ratio(glfwGetTime(), period);
     double theta = interpolate(-std::numbers::pi, std::numbers::pi, ratio);
 
-    parent.renman.vscreen_viewport();
     auto&& [vs_w, vs_h] = parent.renman.vs_size();
-    sprite2d::position pos{(int)vs_w / 2 - 256, (int)vs_w / 2 + 256, (int)vs_h / 2 - 256, (int)vs_h / 2 + 256};
-    auto rot = glm::translate(eye_mat4, glm::vec3((int)vs_w / 2, (int)vs_h / 2, 0.0f));
-    rot = glm::rotate(rot, (float)theta, glm::vec3(0.0f, 0.0f, 1.0f));
-    rot = glm::translate(rot, glm::vec3(-(int)vs_w / 2, -(int)vs_h / 2, 0.0f));
+    glut::position pos{(int)vs_w / 2 - 256, (int)vs_w / 2 + 256, (int)vs_h / 2 - 384, (int)vs_h / 2 + 384};
+    auto rot = glut::centered_rotate2d(glut::eye4, theta, vs_w / 2, vs_h / 2);
     spr.blit(pos, rot);
 }

@@ -7,7 +7,7 @@
 class game_window;
 
 struct sprite2d_ref {
-    using position = sprite2d::position;
+    using position = glut::position;
     game_window& wnd;
     const sprite2d& spr;
     sprite2d_ref(game_window& wnd_, const sprite2d& spr_);

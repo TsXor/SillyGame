@@ -4,36 +4,15 @@
 
 #include <string>
 #include <tuple>
-#include "utilities/ogl_deps.hpp"
+#include "utilities/ogl_utils.hpp"
 #include "base_manager.hpp"
 #include "utilities/sprite2d.hpp"
-
-extern const glm::mat4 eye_mat4;
+#include "utilities/map2d.hpp"
 
 class render_manager : public base_manager {
-public:
-    struct gl_vertex {
-        gl::VertexArray vao;
-        gl::ArrayBuffer vbo;
-        template <typename FuncT>
-        void with_buf_do(FuncT action) {
-            gl::Bind(vao); gl::Bind(vbo);
-            action(*this);
-            gl::Unbind(vbo); gl::Unbind(vao);
-        }
-        template <typename FuncT>
-        void with_obj_do(FuncT action) {
-            gl::Bind(vao);
-            action(*this);
-            gl::Unbind(vao);
-        }
-    };
-
-    using position = sprite2d::position;
-
-private:
+    using position = glut::position;
     // bilt用到的OpenGL资源
-    gl_vertex blit_data;
+    glut::vertex_obj blit_data;
     // “虚拟屏幕”的宽和高
     unsigned int vs_w = 0, vs_h = 0;
 
@@ -53,9 +32,14 @@ public:
     // 使用占据整个窗口的视口
     void full_viewport();
 
-    // 将指定纹理的一部分渲染到“虚拟屏幕”上的指定位置
+    // 将指定纹理经xy与uv变换后渲染
+    void blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::mat4& uv);
+    // 将指定素材渲染到“虚拟屏幕”上的指定位置，并对坐标施加线性变换
     void blit(const sprite2d& spr, const position& xy, const glm::mat4& transform);
+    // 将指定素材渲染到“虚拟屏幕”上的指定位置
     void blit(const sprite2d& spr, const position& xy);
+    // 用指定地图的指定位置填充整个“虚拟屏幕”
+    void blit(const map2d& map, const position& uv);
 };
 
 #endif // __RENDER_MANAGER__

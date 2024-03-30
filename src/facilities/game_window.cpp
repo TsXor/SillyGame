@@ -13,6 +13,7 @@ void game_window::real_run() {
     // 限制fps，给显卡减点工作量
     double last_render_time = gl_wnd.time();
     bool have_prepared_frame = false;
+    renman.vscreen_viewport();
     while (!gl_wnd.should_close() && !actman.empty()) {
         for (auto& jobf : loop_jobs) { jobf(*this); }
         // 如果之前渲染的帧用掉了，那么渲染一帧新的

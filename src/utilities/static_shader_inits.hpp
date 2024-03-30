@@ -1,5 +1,3 @@
-#include <oglwrap/shapes/rectangle_shape.h>
-
 namespace shaders::details {
 
 static inline void sprite_init(gl::Program& prog) {

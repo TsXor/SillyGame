@@ -3,5 +3,6 @@
 #include "sprite2d.hpp"
 
 namespace sprites {
-const sprite2d& self_portrait();
+const sprite2d& container_portrait();
+const sprite2d& container_small();
 } // namespace sprites

@@ -1,0 +1,9 @@
+{
+    "file": "container_small.png",
+    "sprites": [
+        {
+            "name": "container_small",
+            "uv": [0, 16, 0, 24]
+        }
+    ]
+}

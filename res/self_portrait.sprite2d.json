@@ -1,9 +1,0 @@
-{
-    "file": "self_portrait.png",
-    "sprites": [
-        {
-            "name": "self_portrait",
-            "uv": [0, 64, 0, 64]
-        }
-    ]
-}
