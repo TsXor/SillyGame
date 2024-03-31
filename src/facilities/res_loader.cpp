@@ -33,6 +33,7 @@ uvco::coro_fn<std::optional<stb_decoded_image>> res_loader::load_image(const cha
         spdlog::error("Cannot read image file {}: {}", filename, uv_strerror(read_req->result));
         co_return std::nullopt;
     }
+    co_await uvco::fs::close(uvloop, close_req, open_req->result);
     auto result = std::make_optional<stb_decoded_image>(file_buf.data(), file_buf.size());
     if (result->n_channels <= 0 || result->n_channels > 4) {
         spdlog::error("Image file {} have abnormal n_channels({})!", filename, result->n_channels);
