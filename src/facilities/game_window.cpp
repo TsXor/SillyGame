@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <thread>
 #include <spdlog/spdlog.h>
+#include "utilities/os_misc.hpp"
 
 
 game_window::game_window(const char* title, int fps_limit_, int poll_interval_ms_):
@@ -10,6 +11,7 @@ render_timer(poll_interval_ms_), tick_timer(poll_interval_ms_),
 texman(*this), actman(*this), renman(*this), inpman(*this) {
     gl_wnd.user_pointer(this);
     gl_wnd.key_callback(game_window::key_callback);
+    disable_ime();
 }
 
 game_window::~game_window() {}

@@ -41,6 +41,12 @@ function(make_windows_compiler_happy TARGET)
     endif()
 endfunction(make_windows_compiler_happy)
 
+function(os_misc TARGET)
+    if(WIN32)
+    target_link_libraries(${TARGET} PRIVATE imm32)
+    endif()
+endfunction(os_misc)
+
 
 set(PROJECT_SOURCE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src)
 file(GLOB_RECURSE PROJECT_SOURCES ${PROJECT_SOURCE_ROOT}/*.cpp)
@@ -48,3 +54,4 @@ add_executable(SillyGame ${PROJECT_SOURCES})
 target_include_directories(SillyGame PRIVATE ${PROJECT_SOURCE_ROOT})
 make_windows_compiler_happy(SillyGame)
 add_gl_deps(SillyGame)
+os_misc(SillyGame)
