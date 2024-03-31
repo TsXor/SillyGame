@@ -26,6 +26,11 @@ void input_manager::flush_key_map() {
 }
 
 void input_manager::on_key_event(int key, int action, int mods) {
+    {
+        const std::lock_guard guard(ks_lock);
+        if (action == GLFW_PRESS) { key_states[key] = true; }
+        if (action == GLFW_RELEASE) { key_states[key] = false; }
+    }
     auto& active = parent.actman.current();
     switch (active.key_mode()) {
         case vkey::mode::RKEY_ONLY: {

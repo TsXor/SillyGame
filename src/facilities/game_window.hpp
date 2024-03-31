@@ -24,6 +24,7 @@ class game_window {
     friend class input_manager;
 
     void render_loop();
+    void tick_loop();
     void real_run();
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -33,7 +34,7 @@ protected:
     ogl_window gl_wnd;
     int fps_limit, poll_interval_ms;
     std::list<job_type> loop_jobs;
-    naive_timer timer;
+    naive_timer render_timer, tick_timer;
     res_jloader resldr;
 
 public:

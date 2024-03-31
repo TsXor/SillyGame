@@ -15,6 +15,7 @@ struct iface_activity {
     virtual void render() = 0;
     virtual vkey::mode key_mode() { return vkey::mode::VKEY_ONLY; }
     virtual void on_key_event(vkey::code vkc, int rkc, int action, int mods) {}
+    virtual void tick(double this_time, double last_time) {}
 };
 
 /**

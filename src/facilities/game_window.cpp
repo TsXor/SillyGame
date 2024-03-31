@@ -5,9 +5,11 @@
 
 
 game_window::game_window(const char* title, int fps_limit_, int poll_interval_ms_):
-gl_wnd(title), fps_limit(fps_limit_), poll_interval_ms(poll_interval_ms_), timer(poll_interval_ms_),
+gl_wnd(title), fps_limit(fps_limit_), poll_interval_ms(poll_interval_ms_),
+render_timer(poll_interval_ms_), tick_timer(poll_interval_ms_),
 texman(*this), actman(*this), renman(*this), inpman(*this) {
     gl_wnd.user_pointer(this);
+    gl_wnd.key_callback(game_window::key_callback);
 }
 
 game_window::~game_window() {}
@@ -37,12 +39,25 @@ void game_window::render_loop() {
             have_prepared_frame = false;
         }
         // 等待一小会，降低CPU占用
-        timer.wait();
+        render_timer.wait();
+    }
+}
+
+void game_window::tick_loop() {
+    double last_time = gl_wnd.time();
+    tick_timer.wait();
+    while (!gl_wnd.should_close() && !actman.empty()) {
+        double this_time = gl_wnd.time();
+        actman.current().tick(this_time, last_time);
+        last_time = this_time;
+        tick_timer.wait();
     }
 }
 
 void game_window::real_run() {
-    std::jthread renderer(game_window::render_loop, this);
+    std::jthread
+        renderer(game_window::render_loop, this),
+        ticker(game_window::tick_loop, this);
     while (!gl_wnd.should_close() && !actman.empty()) {
         // 主线程用于处理事件
         gl_wnd.wait_events();

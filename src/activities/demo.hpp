@@ -6,14 +6,16 @@
 #include "facilities/iface_activity.hpp"
 #include "utilities/sprite2d_ref.hpp"
 
-class show_square : public base_activity {
+class demo : public base_activity {
     sprite2d_ref spr;
+    volatile double posx, posy;
 
 public:
-    show_square(game_window& window);
-    ~show_square();
+    demo(game_window& window);
+    ~demo();
     
-    virtual void render();
+    void render() override;
+    void tick(double this_time, double last_time) override;
 };
 
 #endif // __DEMO__
