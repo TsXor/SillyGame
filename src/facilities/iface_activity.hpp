@@ -2,6 +2,8 @@
 #ifndef __IFACE_ACTIVITY__
 #define __IFACE_ACTIVITY__
 
+#include "utilities/vkey_def.hpp"
+
 class game_window;
 
 /**
@@ -11,7 +13,8 @@ class game_window;
 struct iface_activity {
     virtual ~iface_activity() {};
     virtual void render() = 0;
-    virtual void on_key(int key, int scancode, int action, int mods) {};
+    virtual vkey::mode key_mode() { return vkey::mode::VKEY_ONLY; }
+    virtual void on_key_event(vkey::code vkc, int rkc, int action, int mods) {}
 };
 
 /**

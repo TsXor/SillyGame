@@ -32,14 +32,19 @@ struct ogl_window {
     operator handle_type() { return hwnd; }
     void use_ctx() { glfwMakeContextCurrent(hwnd); }
     bool should_close() { return glfwWindowShouldClose(hwnd); }
+    void should_close(bool val) { return glfwSetWindowShouldClose(hwnd, val); }
     void swap_buffers() { glfwSwapBuffers(hwnd); }
     static double time() { return glfwGetTime(); }
     static void poll_events() { glfwPollEvents(); }
+    static void wait_events() { glfwWaitEvents(); }
     std::tuple<int, int> size() {
         std::tuple<int, int> result;
         glfwGetWindowSize(hwnd, &std::get<0>(result), &std::get<1>(result));
         return result;
     }
+    void key_callback(GLFWkeyfun cb) { glfwSetKeyCallback(hwnd, cb); }
+    void user_pointer(void* data) { glfwSetWindowUserPointer(hwnd, data); }
+    void* user_pointer() { return glfwGetWindowUserPointer(hwnd); }
 };
 
 #endif // __GLFW_CONTEXT__

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <tuple>
+#include <optional>
 #include "utilities/ogl_utils.hpp"
 #include "base_manager.hpp"
 #include "utilities/sprite2d.hpp"
@@ -11,8 +12,9 @@
 
 class render_manager : public base_manager {
     using position = glut::position;
-    // bilt用到的OpenGL资源
-    glut::vertex_obj blit_data;
+    // bilt用到的OpenGL资源，懒构造
+    std::optional<glut::vertex_obj> _blit_data = std::nullopt;
+    glut::vertex_obj& blit_data();
     // “虚拟屏幕”的宽和高
     unsigned int vs_w = 0, vs_h = 0;
 

@@ -10,6 +10,7 @@
 #include "texture_manager.hpp"
 #include "activity_manager.hpp"
 #include "render_manager.hpp"
+#include "input_manager.hpp"
 
 /**
  * 游戏窗口类。
@@ -20,8 +21,11 @@ class game_window {
     friend class texture_manager;
     friend class activity_manager;
     friend class render_manager;
-    
+    friend class input_manager;
+
+    void render_loop();
     void real_run();
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 protected:
     using job_type = void(*)(game_window&);
@@ -36,6 +40,7 @@ public:
     texture_manager texman;
     activity_manager actman;
     render_manager renman;
+    input_manager inpman;
 
     game_window(const char* title, int fps_limit_, int poll_interval_ms_);
     ~game_window();
@@ -48,7 +53,7 @@ public:
     void remove_loop_job(job_handle_type job) {
         loop_jobs.erase(job);
     }
-    
+
     // SillyGame，启动！
     // 构造一个activity并以它为入口开始运行
     template <typename SceneT, typename... ArgTs>

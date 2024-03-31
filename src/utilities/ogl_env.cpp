@@ -29,11 +29,8 @@ ogl_window::ogl_window(const char* title, int gl_major, int gl_minor) {
 
     const GLFWvidmode * mon_mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     hwnd = glfwCreateWindow(mon_mode->width / 2, mon_mode->height / 2, title, nullptr, nullptr);
-    glfwSetWindowPos(hwnd, mon_mode->width / 4, mon_mode->height / 4);
     if (!hwnd) { throw std::runtime_error("Cannot create GLFW window!"); }
-
-    use_ctx();
-    if (!gladLoadGL()) { throw std::runtime_error("Cannot load OpenGL with GLAD!"); }
+    glfwSetWindowPos(hwnd, mon_mode->width / 4, mon_mode->height / 4);
 }
 
 ogl_window::~ogl_window() {

@@ -14,13 +14,19 @@ static const float blit_vertices[] = {
     1.0f, 0.0f, 1.0f, 0.0f
 };
 
-render_manager::render_manager(game_window& parent) : base_manager(parent) {
-    blit_data.with_buf_do([&](glut::vertex_obj& vert) {
-        gl::VertexAttrib(0).pointer(4, gl::kFloat, false, 0, 0).enable();
-        vert.vbo.data(sizeof(blit_vertices), blit_vertices);
-    });
-}
+render_manager::render_manager(game_window& parent) : base_manager(parent) {}
 render_manager::~render_manager() {}
+
+glut::vertex_obj& render_manager::blit_data() {
+    if (!_blit_data) {
+        _blit_data.emplace();
+        _blit_data->with_buf_do([&](glut::vertex_obj& vert) {
+            gl::VertexAttrib(0).pointer(4, gl::kFloat, false, 0, 0).enable();
+            vert.vbo.data(sizeof(blit_vertices), blit_vertices);
+        });
+    }
+    return *_blit_data;
+}
 
 void render_manager::use_texture(const std::string& path) {
     auto img = wnd().texman.get_texture(path);
@@ -53,7 +59,7 @@ void render_manager::blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::ma
     var_pos_trans.set(xy);
     var_tex_trans.set(uv);
     gl::Bind(tex);
-    blit_data.with_obj_do([&](glut::vertex_obj& vert) {
+    blit_data().with_obj_do([&](glut::vertex_obj& vert) {
         gl::DrawArrays(gl::PrimType::kTriangles, 0, STATIC_ARRAY_SIZE(blit_vertices));
     });
 }

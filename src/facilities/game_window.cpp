@@ -1,24 +1,31 @@
 #include "game_window.hpp"
 #include <algorithm>
 #include <thread>
+#include <spdlog/spdlog.h>
 
 
 game_window::game_window(const char* title, int fps_limit_, int poll_interval_ms_):
 gl_wnd(title), fps_limit(fps_limit_), poll_interval_ms(poll_interval_ms_), timer(poll_interval_ms_),
-texman(*this), actman(*this), renman(*this) { gl_wnd.use_ctx(); }
+texman(*this), actman(*this), renman(*this), inpman(*this) {
+    gl_wnd.user_pointer(this);
+}
 
 game_window::~game_window() {}
 
-void game_window::real_run() {
-    // 限制fps，给显卡减点工作量
+void game_window::render_loop() {
+    gl_wnd.use_ctx();
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        spdlog::error("FATAL: Cannot load OpenGL with GLAD!");
+        gl_wnd.should_close(true); return;
+    }
     double last_render_time = gl_wnd.time();
     bool have_prepared_frame = false;
-    renman.vscreen_viewport();
     while (!gl_wnd.should_close() && !actman.empty()) {
         for (auto& jobf : loop_jobs) { jobf(*this); }
         // 如果之前渲染的帧用掉了，那么渲染一帧新的
         if (!have_prepared_frame) {
             gl::Clear().Color().Depth();
+            renman.vscreen_viewport();
             actman.current().render();
             have_prepared_frame = true;
         }
@@ -29,9 +36,20 @@ void game_window::real_run() {
             last_render_time = gl_wnd.time();
             have_prepared_frame = false;
         }
-        // 处理事件
-        gl_wnd.poll_events();
         // 等待一小会，降低CPU占用
         timer.wait();
     }
+}
+
+void game_window::real_run() {
+    std::jthread renderer(game_window::render_loop, this);
+    while (!gl_wnd.should_close() && !actman.empty()) {
+        // 主线程用于处理事件
+        gl_wnd.wait_events();
+    }
+}
+
+void game_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    auto& self = *reinterpret_cast<game_window*>(glfwGetWindowUserPointer(window));
+    self.inpman.on_key_event(key, action, mods);
 }
