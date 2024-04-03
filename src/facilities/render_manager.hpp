@@ -6,12 +6,12 @@
 #include <tuple>
 #include <optional>
 #include "utilities/ogl_utils.hpp"
-#include "base_manager.hpp"
-#include "utilities/sprite2d.hpp"
-#include "utilities/map2d.hpp"
+#include "utilities/ogl_env.hpp"
 
-class render_manager : public base_manager {
+class render_manager {
     using position = glut::position;
+    // OpenGL窗口
+    ogl_window& gl_wnd;
     // bilt用到的OpenGL资源，懒构造
     std::optional<glut::vertex_obj> _blit_data = std::nullopt;
     glut::vertex_obj& blit_data();
@@ -19,7 +19,7 @@ class render_manager : public base_manager {
     unsigned int vs_w = 0, vs_h = 0;
 
 public:
-    render_manager(game_window& parent);
+    render_manager(ogl_window& gl_wnd_);
     ~render_manager();
 
     std::tuple<unsigned int, unsigned int> vs_size() { return {vs_w, vs_h}; }
@@ -36,12 +36,6 @@ public:
 
     // 将指定纹理经xy与uv变换后渲染
     void blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::mat4& uv);
-    // 将指定素材渲染到“虚拟屏幕”上的指定位置，并对坐标施加线性变换
-    void blit(const sprite2d& spr, const position& xy, const glm::mat4& transform);
-    // 将指定素材渲染到“虚拟屏幕”上的指定位置
-    void blit(const sprite2d& spr, const position& xy);
-    // 用指定地图的指定位置填充整个“虚拟屏幕”
-    void blit(const map2d& map, const position& uv);
 };
 
 #endif // __RENDER_MANAGER__

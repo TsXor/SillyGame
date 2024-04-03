@@ -17,6 +17,8 @@ public:
     map2d(std::string_view path);
     ~map2d();
     const std::string& path() const { return file_path; }
+    // 用此地图的指定位置填充整个“虚拟屏幕”
+    void render(game_window& wnd, const position& uv);
 };
 
 #endif // __NAIVE_MAP_2D__

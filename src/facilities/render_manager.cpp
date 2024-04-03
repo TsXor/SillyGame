@@ -1,5 +1,4 @@
 #include "render_manager.hpp"
-#include "game_window.hpp"
 #include "utilities/macros.hpp"
 #include "utilities/static_shaders.hpp"
 
@@ -14,7 +13,7 @@ static const float blit_vertices[] = {
     1.0f, 0.0f, 1.0f, 0.0f
 };
 
-render_manager::render_manager(game_window& parent) : base_manager(parent) {}
+render_manager::render_manager(ogl_window& gl_wnd_) : gl_wnd(gl_wnd_) {}
 render_manager::~render_manager() {}
 
 glut::vertex_obj& render_manager::blit_data() {
@@ -28,13 +27,8 @@ glut::vertex_obj& render_manager::blit_data() {
     return *_blit_data;
 }
 
-void render_manager::use_texture(const std::string& path) {
-    auto img = wnd().texman.get_texture(path);
-    if (img) { gl::Bind(img->tex); } else { glBindTexture(GL_TEXTURE_2D, 0); }
-}
-
 void render_manager::center_viewport(unsigned int hint_width, unsigned int hint_height) {
-    auto [cur_width, cur_height] = wnd().gl_wnd.size();
+    auto [cur_width, cur_height] = gl_wnd.size();
     int vp_w = std::min(cur_height * (int)hint_width / (int)hint_height, cur_width);
     int vp_h = std::min(cur_width * (int)hint_height / (int)hint_width, cur_height);
     int x_offset = (cur_width - vp_w) / 2;
@@ -48,7 +42,7 @@ void render_manager::vscreen_viewport() {
 }
 
 void render_manager::full_viewport() {
-    auto [cur_width, cur_height] = wnd().gl_wnd.size();
+    auto [cur_width, cur_height] = gl_wnd.size();
     gl::Viewport(0, 0, cur_width, cur_height);
 }
 
@@ -62,28 +56,4 @@ void render_manager::blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::ma
     blit_data().with_obj_do([&](glut::vertex_obj& vert) {
         gl::DrawArrays(gl::PrimType::kTriangles, 0, STATIC_ARRAY_SIZE(blit_vertices));
     });
-}
-
-void render_manager::blit(const sprite2d& spr, const position& xy, const glm::mat4& transform) {
-    auto maybe_img = wnd().texman.get_texture(spr.path());
-    if (!maybe_img) { return; }
-    auto& img = *maybe_img;
-    blit(img.tex,
-        glut::xy_trans(xy, vs_w, vs_h, transform),
-        spr.tex_mat(img.width, img.height)
-    );
-}
-
-void render_manager::blit(const sprite2d& spr, const position& xy) {
-    blit(spr, xy, glut::eye4);
-}
-
-void render_manager::blit(const map2d& map, const position& uv) {
-    auto maybe_img = wnd().texman.get_texture(map.path());
-    if (!maybe_img) { return; }
-    auto& img = *maybe_img;
-    blit(img.tex,
-        glut::eye4,
-        glut::uv_trans(uv, img.width, img.height, glut::eye4)
-    );
 }

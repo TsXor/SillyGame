@@ -4,7 +4,7 @@
 
 
 demo::demo(game_window& window) : base_activity(window),
-spr{parent, sprites::container_small()} {
+spr(sprites::container_small()) {
     parent.renman.vs_size(1024, 768);
     auto&& [vs_w, vs_h] = parent.renman.vs_size();
     posx = vs_w / 2; posy = vs_h / 2;
@@ -33,5 +33,5 @@ void demo::tick(double this_time, double last_time) {
 
 void demo::render(){
     glut::position pos{(int)posx - 32, (int)posx + 32, (int)posy - 48, (int)posy + 48};
-    spr.blit(pos);
+    spr.render(parent, pos);
 }

@@ -21,23 +21,15 @@
 class game_window {
     using base_duration = std::chrono::microseconds;
 
-    friend class texture_manager;
-    friend class activity_manager;
-    friend class render_manager;
-    friend class input_manager;
-
     void render_loop();
     void tick_loop();
     void real_run();
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 protected:
-    using job_type = void(*)(game_window&);
-
     ogl_window gl_wnd;
     unsigned int fps_limit;
-    std::chrono::microseconds ticker_interval;
-    std::list<job_type> loop_jobs;
+    base_duration ticker_interval;
     res_jloader resldr;
 
 public:
@@ -53,20 +45,11 @@ public:
         game_window(title, fps_limit_, std::chrono::duration_cast<base_duration>(ticker_interval_)) {}
     ~game_window();
 
-    using job_handle_type = decltype(loop_jobs)::iterator;
-
-    job_handle_type add_loop_job(job_type fn) {
-        return loop_jobs.emplace(loop_jobs.end(), fn);
-    }
-    void remove_loop_job(job_handle_type job) {
-        loop_jobs.erase(job);
-    }
-
     // SillyGame，启动！
     // 构造一个activity并以它为入口开始运行
     template <typename SceneT, typename... ArgTs>
-    void run(ArgTs... args) {
-        actman.emplace<SceneT>(std::forward<ArgTs>(args)...);
+    void run(ArgTs&&... args) {
+        actman.emplace<SceneT>(*this, std::forward<ArgTs>(args)...);
         real_run();
     }
 };

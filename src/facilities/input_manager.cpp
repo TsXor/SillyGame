@@ -1,5 +1,4 @@
 #include "input_manager.hpp"
-#include "game_window.hpp"
 
 
 static const std::vector<int> key_map_default({
@@ -14,9 +13,10 @@ static const std::vector<int> key_map_default({
     /* CANCEL */ GLFW_KEY_C,
 });
 
-input_manager::input_manager(game_window& parent) : base_manager(parent),
-key_map(key_map_default) { flush_key_map(); }
-
+input_manager::input_manager() : key_map(key_map_default) {
+    flush_key_map();
+    for (auto& ks : key_states) { ks = false; }
+}
 input_manager::~input_manager() {}
 
 void input_manager::flush_key_map() {
@@ -25,13 +25,12 @@ void input_manager::flush_key_map() {
     }
 }
 
-void input_manager::on_key_event(int key, int action, int mods) {
+void input_manager::on_key_event(int key, int action, int mods, iface_activity& active) {
     {
         const std::lock_guard guard(ks_lock);
         if (action == GLFW_PRESS) { key_states[key] = true; }
         if (action == GLFW_RELEASE) { key_states[key] = false; }
     }
-    auto& active = parent.actman.current();
     switch (active.key_mode()) {
         case vkey::mode::RKEY_ONLY: {
             active.on_key_event(vkey::code::NO_VKEY, key, action, mods);

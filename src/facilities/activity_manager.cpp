@@ -1,16 +1,15 @@
-#include <unordered_map>
 #include "activity_manager.hpp"
-#include "game_window.hpp"
+#include <unordered_map>
 
-activity_manager::activity_manager(game_window& parent):
-    base_manager(parent) { add_job(loop_job); }
+
+activity_manager::activity_manager() {}
 activity_manager::~activity_manager() {
+    destroy_poped_activities(); // 析构当前排队的
     while (!stack.empty()) { pop(); }
-    for (auto dp : delete_pending) { delete dp; }
+    destroy_poped_activities(); // 析构上一句产生的
 }
 
-void activity_manager::loop_job(game_window& wnd) {
-    auto& delete_pending = wnd.actman.delete_pending;
-    for (auto dp : delete_pending) { delete dp; }
-    delete_pending.clear();
+void activity_manager::destroy_poped_activities() {
+    for (auto act : poped) { delete act; }
+    poped.clear();
 }

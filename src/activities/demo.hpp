@@ -3,11 +3,11 @@
 #define __DEMO__
 
 #include "utilities/ogl_deps.hpp"
-#include "facilities/iface_activity.hpp"
-#include "utilities/sprite2d_ref.hpp"
+#include "utilities/base_activity.hpp"
+#include "utilities/sprite2d.hpp"
 
 class demo : public base_activity {
-    sprite2d_ref spr;
+    const sprite2d& spr;
     volatile double posx, posy;
 
 public:

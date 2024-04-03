@@ -2,15 +2,13 @@
 #ifndef __TEXTURE_MANAGER__
 #define __TEXTURE_MANAGER__
 
-#include <unordered_map>
 #include <unordered_set>
 #include <optional>
 #include <mutex>
 #include "utilities/gpu_tex_img.hpp"
-#include "res_loader.hpp"
-#include "base_manager.hpp"
 #include "utilities/swap_queue.hpp"
 #include "utilities/naive_lru.hpp"
+#include "res_loader.hpp"
 
 /**
  * 纹理管理器。管理纹理图片的加载过程。
@@ -19,12 +17,13 @@
  *   - 这个类的代码很大程度上依赖于“纹理缓存至少足够保存当前使用的纹理”这个事实。
  *     如果纹理缓存过小，图片将不断重复加载，还可能发生一些不可预测的问题。
  */
-class texture_manager : public base_manager {
+class texture_manager {
     // GPU纹理缓存上限，单位：字节
     static constexpr size_t gpu_mem_thresh = 64 << 20; // MB
     // CPU纹理缓存上限，单位：字节
     static constexpr size_t cpu_mem_thresh = 256 << 20; // MB
 
+    res_loader& resldr;
     size_t cpu_mem = 0, gpu_mem = 0;
     naive_lru<stb_decoded_image> cpu_textures;
     naive_lru<gpu_tex2d> gpu_textures;
@@ -32,11 +31,10 @@ class texture_manager : public base_manager {
     swap_queue<std::pair<std::string_view, stb_decoded_image*>> texture_load_queue;
     std::unordered_set<std::string> available_or_loading;
 
-    static void loop_job(game_window& wnd);
     uvco::coro_fn<void> texture_to_queue(const char* path);
 
 public:
-    texture_manager(game_window& parent);
+    texture_manager(res_loader& ldr);
     ~texture_manager();
 
     // 同步地加载指定路径的纹理，完全不使用缓存，适用于全局静态纹理
@@ -49,6 +47,9 @@ public:
     // 获取指定路径的纹理，失败时返回空指针
     // 若未开始加载，启动加载
     gpu_tex2d* get_texture(const std::string& path);
+    // 将正在排队的纹理载入GPU
+    // 注意：此函数只能在渲染线程调用
+    void clear_texture_queue();
 };
 
 #endif // __TEXTURE_MANAGER__

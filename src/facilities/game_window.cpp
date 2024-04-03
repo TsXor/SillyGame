@@ -8,7 +8,7 @@
 
 game_window::game_window(const char* title, unsigned int fps_limit_, base_duration ticker_interval_):
 gl_wnd(title), fps_limit(fps_limit_), ticker_interval(ticker_interval_),
-texman(*this), actman(*this), renman(*this), inpman(*this) {
+texman(resldr), actman(), renman(gl_wnd), inpman() {
     gl_wnd.user_pointer(this);
     gl_wnd.key_callback(game_window::key_callback);
     disable_ime();
@@ -27,7 +27,8 @@ void game_window::render_loop() {
     naive_timer::while_loop(ticker_interval,
         [&]() { return !gl_wnd.should_close() && !actman.empty(); },
         [&]() {
-            for (auto& jobf : loop_jobs) { jobf(*this); }
+            texman.clear_texture_queue();
+            actman.destroy_poped_activities();
             // 如果之前渲染的帧用掉了，那么渲染一帧新的
             if (!have_prepared_frame) {
                 gl::Clear().Color().Depth();
@@ -70,5 +71,5 @@ void game_window::real_run() {
 
 void game_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     auto& self = *reinterpret_cast<game_window*>(glfwGetWindowUserPointer(window));
-    self.inpman.on_key_event(key, action, mods);
+    self.inpman.on_key_event(key, action, mods, self.actman.current());
 }
