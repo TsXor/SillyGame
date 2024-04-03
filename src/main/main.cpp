@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include "facilities/game_window.hpp"
+#include "framework.hpp"
 #include "activities/demo.hpp"
 
 

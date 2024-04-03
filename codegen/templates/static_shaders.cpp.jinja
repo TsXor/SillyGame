@@ -1,7 +1,7 @@
 // 这个文件是自动生成的，别改。
 
-#include "static_shaders.hpp"
-#include "static_shader_inits.hpp"
+#include "./static_shaders.hpp"
+#include "./static_shader_inits.hpp"
 
 using namespace std::string_literals;
 

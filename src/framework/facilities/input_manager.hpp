@@ -4,8 +4,8 @@
 
 #include <vector>
 #include <unordered_map>
-#include "utilities/ogl_utils.hpp"
-#include "utilities/vkey_def.hpp"
+#include "framework/utilities/ogl_utils.hpp"
+#include "framework/utilities/vkey_def.hpp"
 #include "iface_activity.hpp"
 
 class input_manager {

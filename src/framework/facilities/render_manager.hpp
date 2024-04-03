@@ -5,8 +5,8 @@
 #include <string>
 #include <tuple>
 #include <optional>
-#include "utilities/ogl_utils.hpp"
-#include "utilities/ogl_env.hpp"
+#include "framework/utilities/ogl_utils.hpp"
+#include "framework/utilities/ogl_env.hpp"
 
 class render_manager {
     using position = glut::position;

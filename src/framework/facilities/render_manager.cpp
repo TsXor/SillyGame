@@ -1,6 +1,6 @@
 #include "render_manager.hpp"
-#include "utilities/macros.hpp"
-#include "utilities/static_shaders.hpp"
+#include "framework/utilities/macros.hpp"
+#include "framework/utilities/static_shaders.hpp"
 
 
 static const float blit_vertices[] = {

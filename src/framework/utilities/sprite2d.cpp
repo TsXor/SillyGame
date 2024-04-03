@@ -1,5 +1,5 @@
 #include "sprite2d.hpp"
-#include "facilities/game_window.hpp"
+#include "framework/facilities/game_window.hpp"
 
 
 sprite2d::sprite2d(std::string_view path, const position& uv) : file_path(path), uvpos(uv) {}

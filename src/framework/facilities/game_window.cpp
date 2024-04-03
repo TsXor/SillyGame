@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <thread>
 #include <spdlog/spdlog.h>
-#include "utilities/naive_timer.hpp"
-#include "utilities/os_misc.hpp"
+#include "framework/utilities/naive_timer.hpp"
+#include "framework/utilities/os_misc.hpp"
 
 
 game_window::game_window(const char* title, unsigned int fps_limit_, base_duration ticker_interval_):

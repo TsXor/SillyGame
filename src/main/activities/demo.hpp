@@ -2,9 +2,7 @@
 #ifndef __DEMO__
 #define __DEMO__
 
-#include "utilities/ogl_deps.hpp"
-#include "utilities/base_activity.hpp"
-#include "utilities/sprite2d.hpp"
+#include "framework.hpp"
 
 class demo : public base_activity {
     const sprite2d& spr;

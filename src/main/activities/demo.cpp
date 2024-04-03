@@ -1,6 +1,5 @@
 #include "demo.hpp"
-#include "facilities/game_window.hpp"
-#include "utilities/static_sprites.hpp"
+#include "main/static_sprites.hpp"
 
 
 demo::demo(game_window& window) : base_activity(window),

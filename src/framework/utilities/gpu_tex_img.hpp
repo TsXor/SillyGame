@@ -2,8 +2,8 @@
 #ifndef __GPU_TEX_IMG__
 #define __GPU_TEX_IMG__
 
-#include "utilities/ogl_deps.hpp"
-#include "utilities/stb_image_wrap.hpp"
+#include "framework/utilities/ogl_deps.hpp"
+#include "framework/utilities/stb_image_wrap.hpp"
 
 // 将已读取的图片加载到GPU纹理，需要在主线程执行
 gl::Texture2D load_texture2d_from_stb(const stb_decoded_image_view &img);

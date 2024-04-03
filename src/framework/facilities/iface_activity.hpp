@@ -2,7 +2,7 @@
 #ifndef __IFACE_ACTIVITY__
 #define __IFACE_ACTIVITY__
 
-#include "utilities/vkey_def.hpp"
+#include "framework/utilities/vkey_def.hpp"
 
 /**
  * Activity接口。不同类别的Activity需要继承并实现对应方法。

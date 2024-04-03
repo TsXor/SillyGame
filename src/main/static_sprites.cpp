@@ -1,6 +1,6 @@
 // 这个文件是自动生成的，别改。
 
-#include "static_sprites.hpp"
+#include "./static_sprites.hpp"
 
 const sprite2d& sprites::container_portrait() {
     static const sprite2d spr("container_portrait.png", {0, 32, 0, 48});

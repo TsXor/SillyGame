@@ -2,8 +2,8 @@
 #ifndef __BASE_ACTIVITY__
 #define __BASE_ACTIVITY__
 
-#include "facilities/iface_activity.hpp"
-#include "facilities/game_window.hpp"
+#include "framework/facilities/iface_activity.hpp"
+#include "framework/facilities/game_window.hpp"
 
 /**
  * Activity基类。大多数情况下，我们需要保存所属窗口的引用。

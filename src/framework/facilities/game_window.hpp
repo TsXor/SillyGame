@@ -5,7 +5,7 @@
 #include <list>
 #include <functional>
 #include <chrono>
-#include "utilities/ogl_env.hpp"
+#include "framework/utilities/ogl_env.hpp"
 #include "res_loader.hpp"
 #include "texture_manager.hpp"
 #include "activity_manager.hpp"

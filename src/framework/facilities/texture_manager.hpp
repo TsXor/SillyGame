@@ -5,9 +5,9 @@
 #include <unordered_set>
 #include <optional>
 #include <mutex>
-#include "utilities/gpu_tex_img.hpp"
-#include "utilities/swap_queue.hpp"
-#include "utilities/naive_lru.hpp"
+#include "framework/utilities/gpu_tex_img.hpp"
+#include "framework/utilities/swap_queue.hpp"
+#include "framework/utilities/naive_lru.hpp"
 #include "res_loader.hpp"
 
 /**

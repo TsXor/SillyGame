@@ -3,7 +3,7 @@
 #ifndef __STATIC_SHADERS_HPP__
 #define __STATIC_SHADERS_HPP__
 
-#include "ogl_deps.hpp"
+#include "framework/utilities/ogl_deps.hpp"
 
 namespace shaders {
 

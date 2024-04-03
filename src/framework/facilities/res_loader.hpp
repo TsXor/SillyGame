@@ -6,7 +6,7 @@
 #include <atomic>
 #include <mutex>
 #include <uvpp.hpp>
-#include "utilities/stb_image_wrap.hpp"
+#include "framework/utilities/stb_image_wrap.hpp"
 
 /**
  * 资源加载器。使用libuv做IO，在单独的线程上运行。
