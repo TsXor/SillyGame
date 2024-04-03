@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
     auto logger = spdlog::basic_logger_mt(project_name, logfile_path.string(), true);
     spdlog::set_default_logger(logger);
     // 启动主窗口
-    game_window(project_name.c_str(), 60, 10).run<demo>();
+    game_window(project_name.c_str(), 60, std::chrono::milliseconds(5))
+        .run<demo>();
     // 再见...
     return 0;
 }

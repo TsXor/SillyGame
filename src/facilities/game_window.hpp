@@ -4,8 +4,8 @@
 
 #include <list>
 #include <functional>
+#include <chrono>
 #include "utilities/ogl_env.hpp"
-#include "utilities/naive_timer.hpp"
 #include "res_loader.hpp"
 #include "texture_manager.hpp"
 #include "activity_manager.hpp"
@@ -16,8 +16,11 @@
  * 游戏窗口类。
  * 这个类主要负责将一众部件打包在一起，具体的功能由各个部件分别实现。
  * 除此以外，这个类还提供了一个“循环回调”的接口。
+ * 笑点解析：不算libuv再创建的，这个类一共启动了5个线程。
  */
 class game_window {
+    using base_duration = std::chrono::microseconds;
+
     friend class texture_manager;
     friend class activity_manager;
     friend class render_manager;
@@ -32,9 +35,9 @@ protected:
     using job_type = void(*)(game_window&);
 
     ogl_window gl_wnd;
-    int fps_limit, poll_interval_ms;
+    unsigned int fps_limit;
+    std::chrono::microseconds ticker_interval;
     std::list<job_type> loop_jobs;
-    naive_timer render_timer, tick_timer;
     res_jloader resldr;
 
 public:
@@ -43,7 +46,11 @@ public:
     render_manager renman;
     input_manager inpman;
 
-    game_window(const char* title, int fps_limit_, int poll_interval_ms_);
+    game_window(const char* title, unsigned int fps_limit_, base_duration ticker_interval_);
+    // 自动转换其他duration
+    template <typename Rep, typename Period> requires (!std::is_same_v<std::chrono::duration<Rep, Period>, base_duration>)
+    game_window(const char* title, unsigned int fps_limit_, std::chrono::duration<Rep, Period> ticker_interval_):
+        game_window(title, fps_limit_, std::chrono::duration_cast<base_duration>(ticker_interval_)) {}
     ~game_window();
 
     using job_handle_type = decltype(loop_jobs)::iterator;

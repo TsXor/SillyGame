@@ -2,21 +2,35 @@
 #ifndef __NAIVE_TIMER__
 #define __NAIVE_TIMER__
 
-#include <vector>
 #include <chrono>
 #include <thread>
-#include <atomic>
-#include <mutex>
 
-struct naive_timer {
-    const size_t interval;
-    std::thread thr;
-    std::atomic<bool> running;
-    std::binary_semaphore event;
-    
-    naive_timer(size_t interval_millis);
-    ~naive_timer();
-    void wait() { event.acquire(); }
-};
+namespace naive_timer {
+
+using base_duration = std::chrono::microseconds;
+
+template <typename DurRep, typename DurPer, typename PredFT, typename BodyFT>
+    requires (!std::is_same_v<std::chrono::duration<DurRep, DurPer>, base_duration>)
+static inline void while_loop(std::chrono::duration<DurRep, DurPer> interval, PredFT&& pred, BodyFT&& body) {
+    while_loop(std::chrono::duration_cast<base_duration>(interval), std::forward<PredFT>(pred), std::forward<BodyFT>(body));
+}
+
+template <typename PredFT, typename BodyFT>
+static inline void while_loop(base_duration interval_base, PredFT&& pred, BodyFT&& body) {
+    using clock = std::chrono::steady_clock;
+    clock::time_point start = clock::now();
+    auto floor_time = [&](clock::time_point tp) {
+        auto dt = std::chrono::duration_cast<base_duration>(tp - start);
+        auto floor_dt = dt / interval_base * interval_base;
+        return start + floor_dt;
+    };
+    while (pred()) {
+        auto exec_begin = clock::now();
+        body();
+        std::this_thread::sleep_until(floor_time(exec_begin) + interval_base);
+    }
+}
+
+} // namespace naive_timer
 
 #endif // __NAIVE_TIMER__
