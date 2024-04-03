@@ -25,7 +25,7 @@ public:
     void on_key_event(int key, int action, int mods, iface_activity& active);
     
     template <typename FuncT>
-    void with_key_states(FuncT handler) {
+    void with_key_states(FuncT&& handler) {
         const std::lock_guard guard(ks_lock);
         handler();
     }

@@ -18,13 +18,13 @@ struct vertex_obj {
     gl::VertexArray vao;
     gl::ArrayBuffer vbo;
     template <typename FuncT>
-    void with_buf_do(FuncT action) {
+    void with_buf_do(FuncT&& action) {
         gl::Bind(vao); gl::Bind(vbo);
         action(*this);
         gl::Unbind(vbo); gl::Unbind(vao);
     }
     template <typename FuncT>
-    void with_obj_do(FuncT action) {
+    void with_obj_do(FuncT&& action) {
         gl::Bind(vao);
         action(*this);
         gl::Unbind(vao);

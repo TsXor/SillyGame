@@ -28,7 +28,6 @@ void game_window::render_loop() {
         [&]() { return !gl_wnd.should_close() && !actman.empty(); },
         [&]() {
             texman.clear_texture_queue();
-            actman.destroy_poped_activities();
             // 如果之前渲染的帧用掉了，那么渲染一帧新的
             if (!have_prepared_frame) {
                 gl::Clear().Color().Depth();
@@ -43,6 +42,7 @@ void game_window::render_loop() {
                 last_render_time = gl_wnd.time();
                 have_prepared_frame = false;
             }
+            actman.sync_current_state();
         }
     );
 }
@@ -53,7 +53,9 @@ void game_window::tick_loop() {
         [&]() { return !gl_wnd.should_close() && !actman.empty(); },
         [&]() {
             double this_time = gl_wnd.time();
-            actman.current().tick(this_time, last_time);
+            actman.with_realtime_current_do([&](iface_activity& cur) {
+                cur.tick(this_time, last_time);
+            });
             last_time = this_time;
         }
     );
@@ -71,5 +73,7 @@ void game_window::real_run() {
 
 void game_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     auto& self = *reinterpret_cast<game_window*>(glfwGetWindowUserPointer(window));
-    self.inpman.on_key_event(key, action, mods, self.actman.current());
+    self.actman.with_realtime_current_do([&](iface_activity& cur) {
+        self.inpman.on_key_event(key, action, mods, cur);
+    });
 }

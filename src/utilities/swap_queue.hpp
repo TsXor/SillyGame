@@ -43,7 +43,7 @@ public:
 
     // swap arrays and process then clear background array
     template <typename FuncT> requires std::is_invocable_v<FuncT, list_type&>
-    void reap(FuncT reaper) { 
+    void reap(FuncT&& reaper) { 
         list_type& bg = swap_and_get_bg();
         reaper(bg); bg.clear();
     }

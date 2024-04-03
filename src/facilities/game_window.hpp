@@ -50,6 +50,7 @@ public:
     template <typename SceneT, typename... ArgTs>
     void run(ArgTs&&... args) {
         actman.emplace<SceneT>(*this, std::forward<ArgTs>(args)...);
+        actman.sync_current_state();
         real_run();
     }
 };
