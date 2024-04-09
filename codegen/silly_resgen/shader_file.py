@@ -1,20 +1,4 @@
-from typing import cast, Any
-from pathlib import Path
-import json, jsonschema.validators
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-
-
-SCRIPT_POS = Path(__file__).parent
-
-JINJA_ENV = Environment(
-    loader=FileSystemLoader(SCRIPT_POS / 'templates'),
-    autoescape=select_autoescape(),
-    trim_blocks=True, lstrip_blocks=True,
-)
-
-
-def make_stdstr_literal(s: str):
-    return json.dumps(s, ensure_ascii=False) + 's'
+from .basics import *
 
 
 class ShaderFile:
@@ -65,10 +49,8 @@ class ShaderFile:
 
 
 class ShaderProgram:
-    SUFFIX = '.shader.json'
-    VALIDATOR = jsonschema.Draft7Validator(
-        json.loads((SCRIPT_POS / 'shader.schema.json').read_text(encoding='utf-8'))
-    )
+    SUFFIX = '.shader'
+    VALIDATOR = get_json_validator('shader')
 
     name: str
     inits: list[str]
@@ -84,47 +66,24 @@ class ShaderProgram:
             init_names = [f'{self.name}_init']
         self.inits = init_names
 
-    @staticmethod
-    def find_program_files(root_dir: Path):
-        for child in root_dir.iterdir():
-            if child.is_file() and child.name.endswith(ShaderProgram.SUFFIX):
-                yield child
 
-
-def gather_template_args(root_dir: str | Path):
+@wrap_jinja_formatter
+def generate_shader(root_dir: Path) -> dict[str, dict[str, Any]]:
     root_dir = Path(root_dir).absolute()
     files = set[ShaderFile]()
     programs = list[ShaderProgram]()
 
-    for shader_desc_file in ShaderProgram.find_program_files(root_dir):
-        shader_desc = json.loads(shader_desc_file.read_text(encoding='utf-8'))
+    for _, shader_desc in load_second_suffix(root_dir, ShaderProgram.SUFFIX):
         sp = ShaderProgram(root_dir, shader_desc)
         for f in sp.files: files.add(f)
         programs.append(sp)
-    
-    return {
+
+    args = {
         'files': files,
         'programs': programs,
     }
 
-
-def run_codegen(src: Path, dst: Path):
-    assert src.is_dir() and dst.is_dir()
-    tmpl_args = gather_template_args(src)
-    hpp = JINJA_ENV.get_template("static_shaders.hpp.jinja").render(**tmpl_args)
-    cpp = JINJA_ENV.get_template("static_shaders.cpp.jinja").render(**tmpl_args)
-    (dst / 'static_shaders.hpp').write_text(hpp, encoding='utf-8')
-    (dst / 'static_shaders.cpp').write_text(cpp, encoding='utf-8')
-    (dst / 'static_shader_inits.hpp').touch()
-
-
-if __name__ == '__main__':
-    import click
-    
-    @click.command()
-    @click.argument('src')
-    @click.argument('dst')
-    def main(src: str, dst: str):
-        run_codegen(Path(src), Path(dst))
-    
-    main()
+    return {
+        'static_shaders.hpp': args,
+        'static_shaders.cpp': args,
+    }
