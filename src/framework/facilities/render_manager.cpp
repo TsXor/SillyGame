@@ -47,6 +47,8 @@ void render_manager::full_viewport() {
 }
 
 void render_manager::blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::mat4& uv) {
+    gl::Enable(gl::kBlend);
+    gl::BlendFunc(gl::kSrcAlpha, gl::kOneMinusSrcAlpha);
     auto& prog = shaders::programs::sprite(); gl::Use(prog);
     gl::Uniform<glm::mat4> var_pos_trans(prog, "pos_trans");
     gl::Uniform<glm::mat4> var_tex_trans(prog, "tex_trans");

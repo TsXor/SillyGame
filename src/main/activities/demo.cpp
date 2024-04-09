@@ -2,35 +2,48 @@
 #include "main/static_sprites.hpp"
 
 
-demo::demo(game_window& window) : base_activity(window),
-spr(sprites::container_small()) {
+using namespace naive_engine;
+
+static simulator::entity::static_data person_info
+    {sprites::container_small(), 64, 96, {{0, 64, 0, 96}}, {{}}};
+
+demo::demo(game_window& window) : base_activity(window), simu(1024, 768) {
     parent.renman.vs_size(1024, 768);
     auto&& [vs_w, vs_h] = parent.renman.vs_size();
-    posx = vs_w / 2; posy = vs_h / 2;
+    person = simu.add_entity(person_info, {(double)vs_w / 2, (double)vs_h / 2});
+    obstacle = simu.add_entity(person_info, {(double)vs_w / 4, (double)vs_h / 2});
 }
 
 demo::~demo() = default;
 
 void demo::tick(double this_time, double last_time) {
-    constexpr double velocity = 200;
+    const std::lock_guard guard(lock);
     double dt = this_time - last_time;
-    parent.inpman.with_key_states([&]() {
-        if (parent.inpman.pressed(vkey::code::LEFT)) {
-            posx -= dt * velocity;
-        }
-        if (parent.inpman.pressed(vkey::code::RIGHT)) {
-            posx += dt * velocity;
-        }
-        if (parent.inpman.pressed(vkey::code::UP)) {
-            posy -= dt * velocity;
-        }
-        if (parent.inpman.pressed(vkey::code::DOWN)) {
-            posy += dt * velocity;
-        }
-    });
+    simu.tick(dt);
+    for (auto&& [other, mtv] : simu.colldet(person)) {
+        simu.teleport_entity_offset(person, mtv);
+    }
 }
 
-void demo::render(){
-    glut::position pos{(int)posx - 32, (int)posx + 32, (int)posy - 48, (int)posy + 48};
-    spr.render(parent, pos);
+static inline basics::vec2 get_velocity_direction(game_window& wnd) {
+    basics::vec2 vel{0, 0};
+    wnd.inpman.with_key_states([&]() {
+        if (wnd.inpman.pressed(vkey::code::LEFT))  { vel.x -= 1.0; }
+        if (wnd.inpman.pressed(vkey::code::RIGHT)) { vel.x += 1.0; }
+        if (wnd.inpman.pressed(vkey::code::UP))    { vel.y -= 1.0; }
+        if (wnd.inpman.pressed(vkey::code::DOWN))  { vel.y += 1.0; }
+    });
+    return vel;
+} 
+
+void demo::on_key_event(vkey::code vkc, int rkc, int action, int mods) {
+    const std::lock_guard guard(lock);
+    constexpr double velocity = 256;
+    person->velocity = get_velocity_direction(parent) * velocity;
+}
+
+void demo::render() {
+    const std::lock_guard guard(lock);
+    gl::ClearColor(0, 0, 255, 0);
+    simu.render(parent);
 }
