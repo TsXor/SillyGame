@@ -43,6 +43,7 @@ target_include_directories(SillyGame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs
 target_include_directories(SillyGame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/stb)
 target_link_libraries(SillyGame PRIVATE uv_a)
 target_link_libraries(SillyGame PRIVATE uv-cpp)
+target_include_directories(SillyGame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/cppcoro/include)
 target_link_libraries(SillyGame PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
 if(WIN32)
     target_link_libraries(SillyGame PRIVATE imm32)

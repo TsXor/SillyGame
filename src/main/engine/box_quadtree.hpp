@@ -6,7 +6,7 @@
 #include <unordered_set>
 #include <list>
 #include <span>
-#include "cppcoro_generator.hpp"
+#include <cppcoro/generator.hpp>
 #include "./basics.hpp"
 
 namespace naive_engine {
