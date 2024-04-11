@@ -59,15 +59,22 @@ struct aabb {
 };
 
 using poly_verts = std::vector<basics::vec2>;
-using poly_verts_view = std::span<const vec2>;
+using poly_verts_view = std::span<vec2>;
+using poly_verts_const_view = std::span<const vec2>;
+
+struct polygon_const_ref {
+    const aabb& box;
+    const poly_verts_const_view vertices;
+};
 
 struct polygon_ref {
-    const aabb& box;
+    aabb& box;
     const poly_verts_view vertices;
+    operator polygon_const_ref() { return {box, vertices}; }
 };
 
 // 检查多边形碰撞并返回1离开2所需的MTV（Minimum Translation Vector，最小平移向量）
-vec2 polygon_colldet(const polygon_ref& poly1, const polygon_ref& poly2, const vec2& offset21);
+vec2 polygon_colldet(const polygon_const_ref& poly1, const polygon_const_ref& poly2, const vec2& offset21);
 
 } // namespace naive_engine::basics
 

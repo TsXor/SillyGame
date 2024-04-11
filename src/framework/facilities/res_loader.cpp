@@ -7,8 +7,12 @@
 void res_loader::work() {
     while (true) {
         needed.acquire();
-        // 自旋到uvloop真正被激活为止
-        do { if (!running) { return; } } while (!uvloop.alive());
+        do { // 自旋到uvloop真正被激活为止
+            // 检查标志以防卡在这里不能退出
+            if (!running) { return; }
+            // 如果你发现自旋的CPU占用过高，那就加sleep。古事记是这样记载的。
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        } while (!uvloop.alive());
         while (uvloop.run(UV_RUN_ONCE) != 0) {}
     }
 }

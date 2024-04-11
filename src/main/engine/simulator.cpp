@@ -57,14 +57,20 @@ void simulator::tick(double dt) {
         boxtree.move_box(entity.hbox, entity.velocity * dt);
     }
 }
-void simulator::render(game_window& wnd) {
+void simulator::render(game_window& wnd, basics::vec2 pos) {
+    if (current_map) {
+        auto&& [map, scalev] = *current_map;
+        map.render(wnd, pos.x / scalev, pos.y / scalev, scalev);
+    }
+    auto&& [vs_w, vs_h] = wnd.renman.vs_size();
+    auto center_offset = basics::vec2(vs_w / 2, vs_h / 2);
     for (auto&& entity : entities) {
-        auto pos = entity.hbox->offset;
-        glut::position rpos;
-        rpos.left = (int)pos.x;
-        rpos.right = rpos.left + entity.data->width;
-        rpos.top = (int)pos.y;
-        rpos.bottom = rpos.top + entity.data->height;
-        entity.data->spr.render(wnd, rpos);
+        auto center_relpos = entity.hbox->offset - pos + center_offset;
+        glut::position render_pos;
+        render_pos.left = (int)center_relpos.x;
+        render_pos.right = render_pos.left + entity.data->width;
+        render_pos.top = (int)center_relpos.y;
+        render_pos.bottom = render_pos.top + entity.data->height;
+        entity.data->spr.render(wnd, render_pos);
     }
 }

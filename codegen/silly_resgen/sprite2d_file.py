@@ -14,7 +14,7 @@ class Sprite2DEntry:
     
     @property
     def uv_literal(self):
-        return '{' + ', '.join(str(i) for i in self.uv) + '}'
+        return make_initializer_list(self.uv)
 
 
 class Sprite2DFile:

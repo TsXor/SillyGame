@@ -62,7 +62,7 @@ protected:
     unsigned char max_depth;
     vtree_type<hitbox_set> vtree;
     std::list<hitbox_group> box_data;
-    double sc_width, sc_height;
+    double scene_width, scene_height;
 
     basics::aabb normalize(const basics::aabb& box);
     hitbox_set& box_pos(const basics::aabb& box);
@@ -72,6 +72,9 @@ public:
 
     grid_loose_quadtree(unsigned char depth, double width, double height);
     ~grid_loose_quadtree();
+
+    std::tuple<double, double> scene_size() const { return {scene_width, scene_height}; }
+
     // 添加碰撞箱
     handle_type add_box(void* parent, const basics::vec2& offset, const std::span<const basics::aabb>& boxes);
     // 删除碰撞箱

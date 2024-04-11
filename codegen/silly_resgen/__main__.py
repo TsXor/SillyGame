@@ -19,4 +19,11 @@ def sprite2d(src: str, dst: str):
     from silly_resgen import generate_sprite2d
     generate_sprite2d(Path(src), Path(dst))
 
+@cli.command()
+@click.argument('src')
+@click.argument('dst')
+def map2d(src: str, dst: str):
+    from silly_resgen import generate_map2d
+    generate_map2d(Path(src), Path(dst))
+
 cli()

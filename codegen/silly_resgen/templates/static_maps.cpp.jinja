@@ -1,0 +1,19 @@
+// 这个文件是自动生成的，别改。
+
+#include "./static_maps.hpp"
+
+using map_blocks = std::vector<map2d::block_pos>;
+
+{% for map in maps %}
+const map2d& maps::{{map.name}}() {
+    static const map2d map({{map.file_literal}},
+        map_blocks{
+            {%- set comma = joiner(", ") %}
+            {% for block in map.blocks %}{{ comma() }}
+            {{block.literal}}
+            {%- endfor +%}
+        }
+    );
+    return map;
+}
+{% endfor %}

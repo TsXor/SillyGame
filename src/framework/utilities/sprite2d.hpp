@@ -13,22 +13,21 @@ class game_window;
  * 此类使用了一个简单的缓存，uv变换矩阵只计算一次。
  */
 class sprite2d {
+public:
     using position = glut::position;
+protected:
     std::string file_path;
     position uvpos;
-    mutable bool _tex_mat_known = false;
-    mutable glm::mat4 _tex_mat;
+    mutable std::optional<glm::mat4> cache_tex_mat;
 public:
-    sprite2d(std::string_view path, const position& uv);
-    ~sprite2d();
+    sprite2d(std::string_view path, const position& uv) : file_path(path), uvpos(uv) {}
+    ~sprite2d() {}
     const std::string& path() const { return file_path; }
     const position& uv() const { return uvpos; }
-    // 获取纹理变换矩阵
-    const glm::mat4& tex_mat(unsigned int width, unsigned int height) const;
+    // 计算纹理变换矩阵
+    glm::mat4 tex_mat(unsigned int width, unsigned int height) const;
     // 将此素材渲染到“虚拟屏幕”上的指定位置，并对坐标施加线性变换
-    void render(game_window& wnd, const position& xy, const glm::mat4& transform) const;
-    // 将此素材渲染到“虚拟屏幕”上的指定位置
-    void render(game_window& wnd, const position& xy) const { render(wnd, xy, glut::eye4); }
+    void render(game_window& wnd, const position& xy, const glm::mat4& transform = glut::eye4) const;
 };
 
 #endif // __NAIVE_SPRITE_2D__

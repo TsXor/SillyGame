@@ -3,14 +3,41 @@
 #define __OGL_UTILS__
 
 #include "ogl_deps.hpp"
+#include <optional>
 
 namespace glut {
 
 struct position {
+    struct offset { int x; int y; };
     int left, right, top, bottom;
     int width() const { return right - left; }
     int height() const { return bottom - top; }
+    static inline std::optional<position> intersect(const position& pos1, const position& pos2);
+    auto intersect(const position& other) const { return intersect(*this, other); }
 };
+
+std::optional<position> position::intersect(const position& pos1, const position& pos2){
+    position result{
+        std::max(pos1.left, pos2.left), std::min(pos1.right, pos2.right),
+        std::max(pos1.top, pos2.top), std::min(pos1.bottom, pos2.bottom)
+    };
+    bool valid = result.left < result.right && result.top < result.bottom;
+    if (valid) { return result; } else { return std::nullopt; }
+}
+
+static inline position operator+(const position& pos, const position::offset& off) {
+    return {pos.left + off.x, pos.right + off.x, pos.top + off.y, pos.bottom + off.y};
+}
+static inline position operator-(const position& pos, const position::offset& off) {
+    return {pos.left - off.x, pos.right - off.x, pos.top - off.y, pos.bottom - off.y};
+}
+static inline position::offset operator+(const position::offset& off1, const position::offset& off2) {
+    return {off1.x + off2.x, off1.y + off2.y};
+}
+static inline position::offset operator-(const position::offset& off1, const position::offset& off2) {
+    return {off1.x - off2.x, off1.y - off2.y};
+}
+
 
 inline const auto eye4 = glm::mat4(1.0f);
 

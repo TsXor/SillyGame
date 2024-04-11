@@ -4,7 +4,7 @@
 
 using namespace naive_engine::basics;
 
-static inline vec2 poly_shadow_range(const polygon_ref& poly, const vec2& v, double vmag) {
+static inline vec2 poly_shadow_range(const polygon_const_ref& poly, const vec2& v, double vmag) {
     size_t poly_nv = poly.vertices.size();
     double cur_pos = 0, pmin = 0, pmax = 0;
     for (size_t i = 0; i < poly_nv; ++i) {
@@ -15,7 +15,7 @@ static inline vec2 poly_shadow_range(const polygon_ref& poly, const vec2& v, dou
     return {pmin, pmax};
 }
 
-static inline vec2 rect_shadow_range(const polygon_ref& poly, const vec2& v, double vmag) {
+static inline vec2 rect_shadow_range(const polygon_const_ref& poly, const vec2& v, double vmag) {
     double hori = vec2(poly.box.width(), 0) * v / vmag;
     double vert = vec2(0, poly.box.height()) * v / vmag;
     double pos[] = {0, hori, vert, hori + vert};
@@ -23,7 +23,7 @@ static inline vec2 rect_shadow_range(const polygon_ref& poly, const vec2& v, dou
     return {*pmin, *pmax};
 }
 
-static inline vec2 polygon_colldet_impl_rect_rect(const polygon_ref& poly1, const polygon_ref& poly2, const vec2& offset21) {
+static inline vec2 polygon_colldet_impl_rect_rect(const polygon_const_ref& poly1, const polygon_const_ref& poly2, const vec2& offset21) {
     // 都是矩形
     vec2 poly_offset = vec2(poly2.box.left, poly2.box.top) - vec2(poly1.box.left, poly1.box.top) + offset21;
 
@@ -58,7 +58,7 @@ static inline vec2 polygon_colldet_impl_rect_rect(const polygon_ref& poly1, cons
     }
 }
 
-static inline vec2 polygon_colldet_impl_rect_poly(const polygon_ref& poly1, const polygon_ref& poly2, const vec2& offset21) {
+static inline vec2 polygon_colldet_impl_rect_poly(const polygon_const_ref& poly1, const polygon_const_ref& poly2, const vec2& offset21) {
     // 一个矩形，一个多边形
     vec2 mtv_direction; double mtv_length = DBL_MAX;
     vec2 poly_offset = poly2.vertices[0] - vec2(poly1.box.left, poly1.box.top) + offset21;
@@ -100,7 +100,7 @@ static inline vec2 polygon_colldet_impl_rect_poly(const polygon_ref& poly1, cons
     }
 }
 
-static inline vec2 polygon_colldet_impl_poly_poly(const polygon_ref& poly1, const polygon_ref& poly2, const vec2& offset21) {
+static inline vec2 polygon_colldet_impl_poly_poly(const polygon_const_ref& poly1, const polygon_const_ref& poly2, const vec2& offset21) {
     // 都是多边形
     vec2 mtv_direction; double mtv_length = DBL_MAX;
     vec2 poly_offset = poly2.vertices[0] - poly1.vertices[0] + offset21;
@@ -143,7 +143,7 @@ static inline vec2 polygon_colldet_impl_poly_poly(const polygon_ref& poly1, cons
     return mtv_direction * mtv_length;
 }
 
-vec2 naive_engine::basics::polygon_colldet(const polygon_ref& poly1, const polygon_ref& poly2, const vec2& offset21) {
+vec2 naive_engine::basics::polygon_colldet(const polygon_const_ref& poly1, const polygon_const_ref& poly2, const vec2& offset21) {
     bool isrect1 = poly1.vertices.empty(); bool isrect2 = poly2.vertices.empty();
     if (isrect1 && isrect2) {
         return polygon_colldet_impl_rect_rect(poly1, poly2, offset21);

@@ -1,0 +1,44 @@
+{
+    "title": "2D地图素材资源文件",
+    "description": "规约用于自动生成静态2D地图素材代码的JSON文件",
+    "type": "object",
+    "properties": {
+        "file": {
+            "description": "目标文件",
+            "type": "string"
+        },
+        "name": {
+            "description": "地图名称",
+            "type": "string"
+        },
+        "blocks": {
+            "description": "文件中包含的地图块列表",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "uv": {
+                        "description": "地图块uv坐标(left, right, top, bottom)",
+                        "type": "array",
+                        "items": [
+                            { "type": "integer" },
+                            { "type": "integer" },
+                            { "type": "integer" },
+                            { "type": "integer" }
+                        ]
+                    },
+                    "at": {
+                        "description": "地图块左上角实际坐标(x, y)",
+                        "type": "array",
+                        "items": [
+                            { "type": "integer" },
+                            { "type": "integer" }
+                        ]
+                    }
+                },
+                "required": ["uv", "at"]
+            }
+        }
+    },
+    "required": ["file", "name", "blocks"]
+}

@@ -26,7 +26,10 @@ public:
         entity(const static_data& data) : data(&data) {}
         ~entity() {}
 
-        basics::polygon_ref poly_at(size_t idx) {
+        basics::vec2 center() const {
+            return hbox->offset + basics::vec2(data->width / 2, data->height / 2);
+        }
+        basics::polygon_const_ref poly_at(size_t idx) const {
             return {data->boxes[idx], data->polys[idx]};
         }
     };
@@ -36,10 +39,14 @@ protected:
     std::list<entity> entities;
 
 public:
+    std::optional<std::pair<map2d, double>> current_map;
+
     simulator(double width, double height);
     ~simulator();
 
     using handle_type = decltype(entities)::iterator;
+
+    auto scene_size() const { return boxtree.scene_size(); }
 
     handle_type add_entity(const entity::static_data& data, const basics::vec2& center = {0, 0});
     void del_entity(handle_type entity);
@@ -49,7 +56,7 @@ public:
     auto colldet(handle_type entity) -> cppcoro::generator<std::pair<handle_type, basics::vec2>>;
 
     void tick(double dt);
-    void render(game_window& wnd);
+    void render(game_window& wnd, basics::vec2 pos);
 };
 
 } // namespace naive_engine

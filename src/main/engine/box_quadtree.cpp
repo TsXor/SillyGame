@@ -28,12 +28,12 @@ static inline size_t combine_idx(ssize_t x, ssize_t y, unsigned char depth) {
 }
 
 grid_loose_quadtree::grid_loose_quadtree(unsigned char depth, double width, double height):
-max_depth(depth), vtree(layer_start(depth)), sc_width(width), sc_height(height) {}
+max_depth(depth), vtree(layer_start(depth)), scene_width(width), scene_height(height) {}
 
 grid_loose_quadtree::~grid_loose_quadtree() {}
 
 basics::aabb grid_loose_quadtree::normalize(const basics::aabb& box) {
-    return { box.left / sc_width, box.right / sc_width, box.top / sc_height, box.bottom / sc_height };
+    return { box.left / scene_width, box.right / scene_width, box.top / scene_height, box.bottom / scene_height };
 }
 
 grid_loose_quadtree::hitbox_set& grid_loose_quadtree::box_pos(const basics::aabb& box) {
