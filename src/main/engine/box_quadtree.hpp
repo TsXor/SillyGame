@@ -6,7 +6,7 @@
 #include <unordered_set>
 #include <list>
 #include <span>
-#include <cppcoro/generator.hpp>
+#include <coutils.hpp>
 #include "./basics.hpp"
 
 namespace naive_engine {
@@ -82,7 +82,7 @@ public:
     // 移动碰撞箱
     void move_box(handle_type group, const basics::vec2& v);
     // 枚举相交的aabb
-    auto may_collide(const grouped_hitbox_ref& boxptr) -> cppcoro::generator<const grouped_hitbox_ref&>;
+    auto may_collide(const grouped_hitbox_ref& boxptr) -> coutils::generator<grouped_hitbox_ref>;
 };
 
 } // namespace naive_engine

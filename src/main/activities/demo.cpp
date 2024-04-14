@@ -1,9 +1,10 @@
 #include "demo.hpp"
-#include "main/static_sprites.hpp"
-#include "main/static_maps.hpp"
+#include "static_sprites.hpp"
+#include "static_maps.hpp"
 
 
 using namespace naive_engine;
+using namespace silly_framework;
 
 static simulator::entity::static_data person_info
     {sprites::container_small(), 64, 96, {{0, 64, 0, 96}}, {{}}};

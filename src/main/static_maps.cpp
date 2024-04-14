@@ -2,6 +2,8 @@
 
 #include "./static_maps.hpp"
 
+using namespace silly_framework;
+
 using map_blocks = std::vector<map2d::block_pos>;
 
 const map2d& maps::dorm() {

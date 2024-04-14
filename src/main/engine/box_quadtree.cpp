@@ -88,7 +88,7 @@ void grid_loose_quadtree::move_box(handle_type group, const basics::vec2& v) {
         } \
     }
 
-auto grid_loose_quadtree::may_collide(const grouped_hitbox_ref& boxptr) -> cppcoro::generator<const grouped_hitbox_ref&> {
+auto grid_loose_quadtree::may_collide(const grouped_hitbox_ref& boxptr) -> coutils::generator<grouped_hitbox_ref> {
     auto box = *boxptr;
     auto norm_box = normalize(box);
     auto depth = std::min(box_depth(norm_box), max_depth);

@@ -2,6 +2,8 @@
 
 #include "./static_sprites.hpp"
 
+using namespace silly_framework;
+
 {% for sprite in sprites %}
 const sprite2d& sprites::{{sprite.name}}() {
     static const sprite2d spr({{sprite.file_literal}}, {{sprite.uv_literal}});

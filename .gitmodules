@@ -16,3 +16,6 @@
 [submodule "extlibs/spdlog"]
 	path = extlibs/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "extlibs/coutils"]
+	path = extlibs/coutils
+	url = https://github.com/TsXor/coutils.git

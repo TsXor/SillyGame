@@ -33,7 +33,7 @@ static inline auto handle_from_boxref(const naive_engine::grouped_hitbox_ref& bo
     return std::bit_cast<simulator::handle_type>(boxref.parent.parent);
 }
 
-auto simulator::colldet(handle_type entity) -> cppcoro::generator<std::pair<handle_type, basics::vec2>> {
+auto simulator::colldet(handle_type entity) -> coutils::generator<std::pair<handle_type, basics::vec2>> {
     std::unordered_set<handle_type::pointer> found_coll;
     for (size_t i = 0; i < entity->hbox->boxes.size(); ++i) {
         grouped_hitbox_ref boxptr{*entity->hbox, i};
@@ -46,7 +46,7 @@ auto simulator::colldet(handle_type entity) -> cppcoro::generator<std::pair<hand
             );
             if (mtv.nonzero()) {
                 found_coll.emplace(&*other);
-                co_yield {other, mtv};
+                co_yield coutils::inituple(other, mtv);
             }
         }
     }
@@ -57,7 +57,7 @@ void simulator::tick(double dt) {
         boxtree.move_box(entity.hbox, entity.velocity * dt);
     }
 }
-void simulator::render(game_window& wnd, basics::vec2 pos) {
+void simulator::render(sf::game_window& wnd, basics::vec2 pos) {
     if (current_map) {
         auto&& [map, scalev] = *current_map;
         map.render(wnd, pos.x / scalev, pos.y / scalev, scalev);
@@ -66,7 +66,7 @@ void simulator::render(game_window& wnd, basics::vec2 pos) {
     auto center_offset = basics::vec2(vs_w / 2, vs_h / 2);
     for (auto&& entity : entities) {
         auto center_relpos = entity.hbox->offset - pos + center_offset;
-        glut::position render_pos;
+        sf::glut::position render_pos;
         render_pos.left = (int)center_relpos.x;
         render_pos.right = render_pos.left + entity.data->width;
         render_pos.top = (int)center_relpos.y;

@@ -3,16 +3,18 @@
 #define __NAIVE_SIMULATOR__
 
 #include <vector>
-#include "framework.hpp"
-#include "main/engine/box_quadtree.hpp"
+#include "silly_framework.hpp"
+#include "engine/box_quadtree.hpp"
 
 namespace naive_engine {
+
+namespace sf = silly_framework;
 
 class simulator {
 public:
     struct entity {
         struct static_data {
-            const sprite2d& spr;
+            const sf::sprite2d& spr;
             unsigned int width, height;
             std::vector<basics::aabb> boxes;
             std::vector<basics::poly_verts> polys;
@@ -39,7 +41,7 @@ protected:
     std::list<entity> entities;
 
 public:
-    std::optional<std::pair<map2d, double>> current_map;
+    std::optional<std::pair<sf::map2d, double>> current_map;
 
     simulator(double width, double height);
     ~simulator();
@@ -53,10 +55,10 @@ public:
 
     void teleport_entity_offset(handle_type entity, basics::vec2 offset);
     void teleport_entity_center(handle_type entity, basics::vec2 center);
-    auto colldet(handle_type entity) -> cppcoro::generator<std::pair<handle_type, basics::vec2>>;
+    auto colldet(handle_type entity) -> coutils::generator<std::pair<handle_type, basics::vec2>>;
 
     void tick(double dt);
-    void render(game_window& wnd, basics::vec2 pos);
+    void render(sf::game_window& wnd, basics::vec2 pos);
 };
 
 } // namespace naive_engine

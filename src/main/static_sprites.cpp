@@ -2,6 +2,8 @@
 
 #include "./static_sprites.hpp"
 
+using namespace silly_framework;
+
 const sprite2d& sprites::container_portrait() {
     static const sprite2d spr("container_portrait.png", {0, 32, 0, 48});
     return spr;
