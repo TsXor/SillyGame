@@ -1,0 +1,3 @@
+include/silly_framework/bundled/** linguist-vendored
+src/silly_framework/bundled/** linguist-vendored
+extlibs/** linguist-vendored
