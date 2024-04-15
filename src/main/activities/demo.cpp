@@ -7,7 +7,7 @@ using namespace naive_engine;
 using namespace silly_framework;
 
 static simulator::entity::static_data person_info
-    {sprites::container_small(), 64, 96, {{0, 64, 0, 96}}, {{}}};
+    {sprites::container_small(), 64, 96, {{16, 48, 72, 96}}, {{}}};
 
 demo::demo(game_window& window) : base_activity(window), simu(512, 1024) {
     parent.renman.vs_size(1024, 768);
@@ -16,6 +16,9 @@ demo::demo(game_window& window) : base_activity(window), simu(512, 1024) {
     person = simu.add_entity(person_info, {sc_w / 2, sc_h / 2});
     obstacle = simu.add_entity(person_info, {sc_w / 2, sc_h / 4});
     simu.current_map = {maps::dorm(), 4.0};
+    simu.render_sorter = [](const simulator::entity& a, const simulator::entity& b) {
+        return a.center().y < b.center().y;
+    };
 }
 
 demo::~demo() = default;

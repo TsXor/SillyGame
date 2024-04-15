@@ -13,6 +13,8 @@ namespace sf = silly_framework;
 class simulator {
 public:
     struct entity {
+        using comp_type = std::function<bool(const entity&, const entity&)>;
+        
         struct static_data {
             const sf::sprite2d& spr;
             unsigned int width, height;
@@ -42,6 +44,7 @@ protected:
 
 public:
     std::optional<std::pair<sf::map2d, double>> current_map;
+    entity::comp_type render_sorter;
 
     simulator(double width, double height);
     ~simulator();

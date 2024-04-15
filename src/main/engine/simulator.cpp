@@ -37,6 +37,19 @@ auto simulator::colldet(handle_type entity) -> coutils::generator<std::pair<hand
     std::unordered_set<handle_type::pointer> found_coll;
     for (size_t i = 0; i < entity->hbox->boxes.size(); ++i) {
         grouped_hitbox_ref boxptr{*entity->hbox, i};
+        // 检查边缘碰撞
+        auto box = *boxptr;
+        auto [scw, sch] = boxtree.scene_size();
+        if (box.width() >= scw || box.height() >= sch) { continue; }
+        basics::vec2 border_mtv = {0, 0};
+        if (box.left < 0) { border_mtv.x = -box.left; }
+        if (box.right > scw) { border_mtv.x = scw - box.right; }
+        if (box.top < 0) { border_mtv.y = -box.top; }
+        if (box.bottom > sch) { border_mtv.y = sch - box.bottom; }
+        if (border_mtv.nonzero()) {
+            co_yield coutils::inituple(handle_type(), border_mtv);
+        }
+        // 检查真实碰撞
         for (auto&& possible : boxtree.may_collide(boxptr)) {
             auto other = handle_from_boxref(possible);
             if (found_coll.contains(&*other)) { continue; }
@@ -64,6 +77,7 @@ void simulator::render(sf::game_window& wnd, basics::vec2 pos) {
     }
     auto&& [vs_w, vs_h] = wnd.renman.vs_size();
     auto center_offset = basics::vec2(vs_w / 2, vs_h / 2);
+    if (render_sorter) { entities.sort(render_sorter); }
     for (auto&& entity : entities) {
         auto center_relpos = entity.hbox->offset - pos + center_offset;
         sf::glut::position render_pos;
