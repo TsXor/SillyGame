@@ -7,8 +7,9 @@
 
 namespace silly_framework::glut {
 
+struct coord { int x; int y; };
+
 struct position {
-    struct offset { int x; int y; };
     int left, right, top, bottom;
     int width() const { return right - left; }
     int height() const { return bottom - top; }
@@ -25,16 +26,16 @@ std::optional<position> position::intersect(const position& pos1, const position
     if (valid) { return result; } else { return std::nullopt; }
 }
 
-static inline position operator+(const position& pos, const position::offset& off) {
+static inline position operator+(const position& pos, const coord& off) {
     return {pos.left + off.x, pos.right + off.x, pos.top + off.y, pos.bottom + off.y};
 }
-static inline position operator-(const position& pos, const position::offset& off) {
+static inline position operator-(const position& pos, const coord& off) {
     return {pos.left - off.x, pos.right - off.x, pos.top - off.y, pos.bottom - off.y};
 }
-static inline position::offset operator+(const position::offset& off1, const position::offset& off2) {
+static inline coord operator+(const coord& off1, const coord& off2) {
     return {off1.x + off2.x, off1.y + off2.y};
 }
-static inline position::offset operator-(const position::offset& off1, const position::offset& off2) {
+static inline coord operator-(const coord& off1, const coord& off2) {
     return {off1.x - off2.x, off1.y - off2.y};
 }
 

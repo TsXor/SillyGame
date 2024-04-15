@@ -7,7 +7,7 @@ glm::mat4 sprite2d::tex_mat(unsigned int width, unsigned int height) const {
     return glut::uv_trans(uvpos, width, height, glut::eye4);
 }
 
-void sprite2d::render(game_window& wnd, const position& xy, const glm::mat4& transform) const {
+void sprite2d::render(game_window& wnd, const glut::position& xy, const glm::mat4& transform) const {
     auto&& [vs_w, vs_h] = wnd.renman.vs_size();
     if (xy.left >= vs_w || xy.right < 0 || xy.top >= vs_h || xy.bottom < 0) { return; }
     auto maybe_img = wnd.texman.get_texture(file_path);

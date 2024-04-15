@@ -18,8 +18,7 @@ class game_window;
  */
 class map2d {
 public:
-    using position = glut::position;
-    using block_pos = std::pair<position, position::offset>;
+    using block_pos = std::pair<glut::position, glut::coord>;
 protected:
     std::string file_path;
     std::vector<block_pos> pos_parts;
@@ -34,7 +33,7 @@ public:
     // 计算所有地图块的纹理变换矩阵
     coutils::generator<glm::mat4> tex_mats(unsigned int width, unsigned int height) const;
     // 用此地图的指定位置填充整个“虚拟屏幕”
-    void render(game_window& wnd, const position& uv) const;
+    void render(game_window& wnd, const glut::position& uv) const;
     // 用此地图的指定位置填充整个“虚拟屏幕”
     void render(game_window& wnd, int cx, int cy, double scalev) const;
 };
