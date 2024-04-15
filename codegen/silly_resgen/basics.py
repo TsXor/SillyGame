@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Any
+from typing import Callable, Iterable, Any, Concatenate, ParamSpec
 from abc import abstractmethod
 from pathlib import Path
 import os
@@ -17,7 +17,7 @@ def make_cstr_literal(s: str):
     return json.dumps(s, ensure_ascii=False)
 
 def make_stdstr_literal(s: str):
-    return make_stdstr_literal(s) + 's'
+    return make_cstr_literal(s) + 's'
 
 def make_initializer_list(obj: Any):
     if isinstance(obj, str):
@@ -45,10 +45,12 @@ def load_second_suffix(root_dir: Path, suffix: str) -> Iterable[tuple[Path, Any]
             if child.stem.endswith(suffix):
                 yield child, read_config(child)
 
-def wrap_jinja_formatter(gather_template_args_fn: Callable[[Path], dict[str, dict[str, Any]]]):
-    def jinja_format_wrapper(src: Path, dst: Path):
+TmplArgs = dict[str, Any]
+P = ParamSpec('P')
+def wrap_jinja_formatter(gather_template_args_fn: Callable[Concatenate[Path, P], dict[str, TmplArgs]]):
+    def jinja_format_wrapper(src: Path, dst: Path, *args: P.args, **kwargs: P.kwargs):
         assert src.is_dir() and dst.is_dir()
-        for file_name, tmpl_args in gather_template_args_fn(src).items():
+        for file_name, tmpl_args in gather_template_args_fn(src, *args, **kwargs).items():
             result = JINJA_ENV.get_template(f"{file_name}.jinja").render(**tmpl_args)
             (dst / file_name).write_text(result, encoding='utf-8')
     return jinja_format_wrapper

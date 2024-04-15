@@ -8,9 +8,10 @@ def cli(): pass
 @cli.command()
 @click.argument('src')
 @click.argument('dst')
-def shader(src: str, dst: str):
+@click.argument('glad_include')
+def shader(src: str, dst: str, glad_include: str):
     from silly_resgen import generate_shader
-    generate_shader(Path(src), Path(dst))
+    generate_shader(Path(src), Path(dst), glad_include)
 
 @cli.command()
 @click.argument('src')

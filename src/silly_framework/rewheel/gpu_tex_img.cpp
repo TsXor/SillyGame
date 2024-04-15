@@ -18,11 +18,11 @@ gl::Texture2D impl::load_texture2d_from_stb(const stb_decoded_image_view& img) {
             format = gl::kRg;
             break;
         case 3:
-            internal_format = gl::kSrgb8;
+            internal_format = gl::kRgb8;
             format = gl::kRgb;
             break;
         case 4:
-            internal_format = gl::kSrgb8Alpha8;
+            internal_format = gl::kRgba8;
             format = gl::kRgba;
             break;
         // 不应该发生，因为加载图片时已验证

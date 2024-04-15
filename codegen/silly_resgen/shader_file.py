@@ -68,7 +68,7 @@ class ShaderProgram:
 
 
 @wrap_jinja_formatter
-def generate_shader(root_dir: Path) -> dict[str, dict[str, Any]]:
+def generate_shader(root_dir: Path, glad_include: str) -> dict[str, dict[str, Any]]:
     root_dir = Path(root_dir).absolute()
     files = set[ShaderFile]()
     programs = list[ShaderProgram]()
@@ -81,6 +81,7 @@ def generate_shader(root_dir: Path) -> dict[str, dict[str, Any]]:
     args = {
         'files': files,
         'programs': programs,
+        'glad_include': glad_include,
     }
 
     return {
