@@ -26,41 +26,39 @@ void game_window::render_loop() {
     }
     double last_render_time = gl_wnd.time();
     bool have_prepared_frame = false;
-    rewheel::naive_timer::while_loop(ticker_interval,
-        [&]() { return !gl_wnd.should_close() && !actman.empty(); },
-        [&]() {
-            texman.clear_texture_queue();
-            // 如果之前渲染的帧用掉了，那么渲染一帧新的
-            if (!have_prepared_frame) {
-                gl::Clear().Color().Depth();
-                renman.vscreen_viewport();
-                actman.current().render();
-                have_prepared_frame = true;
-            }
-            // 如果距离上次显示渲染内容已经过了1/fps，那么
-            // 交换缓冲区显示渲染内容并标记渲染的帧已使用
-            if (gl_wnd.time() - last_render_time >= (1.0 / (double)fps_limit)) {
-                gl_wnd.swap_buffers();
-                last_render_time = gl_wnd.time();
-                have_prepared_frame = false;
-            }
-            actman.sync_current_state();
+    rewheel::naive_timer timer(ticker_interval);
+    while (!gl_wnd.should_close() && !actman.empty()) {
+        rewheel::time_guard tg(timer);
+        texman.clear_texture_queue();
+        // 如果之前渲染的帧用掉了，那么渲染一帧新的
+        if (!have_prepared_frame) {
+            gl::Clear().Color().Depth();
+            renman.vscreen_viewport();
+            actman.current().render();
+            have_prepared_frame = true;
         }
-    );
+        // 如果距离上次显示渲染内容已经过了1/fps，那么
+        // 交换缓冲区显示渲染内容并标记渲染的帧已使用
+        if (gl_wnd.time() - last_render_time >= (1.0 / (double)fps_limit)) {
+            gl_wnd.swap_buffers();
+            last_render_time = gl_wnd.time();
+            have_prepared_frame = false;
+        }
+        actman.sync_current_state();
+    }
 }
 
 void game_window::tick_loop() {
     double last_time = gl_wnd.time();
-    rewheel::naive_timer::while_loop(ticker_interval,
-        [&]() { return !gl_wnd.should_close() && !actman.empty(); },
-        [&]() {
-            double this_time = gl_wnd.time();
-            actman.with_realtime_current_do([&](iface_activity& cur) {
-                cur.tick(this_time, last_time);
-            });
-            last_time = this_time;
-        }
-    );
+    rewheel::naive_timer timer(ticker_interval);
+    while (!gl_wnd.should_close() && !actman.empty()) {
+        rewheel::time_guard tg(timer);
+        double this_time = gl_wnd.time();
+        actman.with_realtime_current_do([&](iface_activity& cur) {
+            cur.tick(this_time, last_time);
+        });
+        last_time = this_time;
+    }
 }
 
 void game_window::real_run() {
