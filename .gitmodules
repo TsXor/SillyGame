@@ -19,3 +19,6 @@
 [submodule "extlibs/coutils"]
 	path = extlibs/coutils
 	url = https://github.com/TsXor/coutils.git
+[submodule "extlibs/glfw"]
+	path = extlibs/glfw
+	url = https://github.com/glfw/glfw.git

@@ -6,12 +6,7 @@ project(SillyGame)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(GLAD_VERSION 4.1-compat)
-set(GLAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glad-${GLAD_VERSION})
-set(GLFW_VERSION 3.4)
-set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glfw-${GLFW_VERSION})
-
-add_subdirectory(${GLFW_DIR})
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/glfw)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/libuv)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/uv-cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/coutils)
