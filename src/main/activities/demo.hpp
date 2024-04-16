@@ -7,6 +7,7 @@
 
 class demo : public silly_framework::base_activity {
     std::mutex lock;
+    silly_framework::coro_host cohost;
     naive_engine::simulator simu;
     naive_engine::simulator::handle_type person;
     naive_engine::simulator::handle_type obstacle;

@@ -4,3 +4,4 @@
 #include "silly_framework/utilities/base_activity.hpp"
 #include "silly_framework/utilities/sprite2d.hpp"
 #include "silly_framework/utilities/map2d.hpp"
+#include "silly_framework/utilities/coro_host.hpp"
