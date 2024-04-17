@@ -80,7 +80,7 @@ def generate_shader(root_dir: Path, glad_include: str) -> dict[str, dict[str, An
 
     args = {
         'files': files,
-        'programs': programs,
+        'programs': sorted(programs, key=lambda p: p.name),
         'glad_include': glad_include,
     }
 
