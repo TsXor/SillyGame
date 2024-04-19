@@ -8,7 +8,7 @@
 namespace silly_framework::vkey {
 
 enum class code {
-    NO_VKEY, // 自行控制键盘事件
+    NO_VKEY, // 占位
     LEFT, RIGHT, UP, DOWN,
     CHECK, // 触发事件/点击按钮/继续对话
     MENU, // 打开菜单
@@ -16,12 +16,8 @@ enum class code {
     CANCEL, // 上一级菜单/重置操作
 };
 
-enum class mode {
-    VKEY_ONLY, // 仅接受存在对应虚拟按键码的按键
-    RKEY_ONLY, // 接受所有按键，虚拟按键码永远为NO_VKEY
-    MIXED, // 接受所有按键，无虚拟按键码则为NO_VKEY
-};
-
+// 笑点解析：这个结构体是为了自定义键位映射设计的，
+//           但是我觉得我很显然写不到那了。
 struct info {
     std::string name; // 保存时使用的名称
     std::unordered_set<code> compatible; // 可使用同一物理按键

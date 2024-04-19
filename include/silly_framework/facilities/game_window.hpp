@@ -19,15 +19,14 @@ class res_jloader;
 /**
  * 游戏窗口类。
  * 这个类主要负责将一众部件打包在一起，具体的功能由各个部件分别实现。
- * 除此以外，这个类还提供了一个“循环回调”的接口。
- * 笑点解析：不算libuv再创建的，这个类一共启动了5个线程。
  */
 class game_window {
     using base_duration = std::chrono::microseconds;
 
-    void render_loop();
-    void tick_loop();
-    void real_run();
+    void render_loop(std::stop_token stoken);
+    void tick_loop(std::stop_token stoken);
+    void activity_loop(iface_activity& start);
+    void real_run(iface_activity& start);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 protected:
@@ -54,9 +53,8 @@ public:
     // 构造一个activity并以它为入口开始运行
     template <typename SceneT, typename... ArgTs>
     void run(ArgTs&&... args) {
-        actman.emplace<SceneT>(*this, std::forward<ArgTs>(args)...);
-        actman.sync_current_state();
-        real_run();
+        auto act = new SceneT(*this, std::forward<ArgTs>(args)...);
+        real_run(*act);
     }
 };
 

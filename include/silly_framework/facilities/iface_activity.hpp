@@ -13,9 +13,12 @@ namespace silly_framework {
 struct iface_activity {
     virtual ~iface_activity() {};
     virtual void render() = 0;
-    virtual vkey::mode key_mode() { return vkey::mode::VKEY_ONLY; }
-    virtual void on_key_event(vkey::code vkc, int rkc, int action, int mods) {}
-    virtual void tick(double this_time, double last_time) {}
+    virtual bool vkey_only() { return true; }
+    // 仅在键盘状态真正改变时触发
+    virtual void on_key_change() {}
+    // 在有键盘事件时触发，例如按住某键时会持续触发
+    virtual void on_key_signal() {}
+    virtual void on_tick(double this_time, double last_time) {}
 };
 
 } // namespace silly_framework

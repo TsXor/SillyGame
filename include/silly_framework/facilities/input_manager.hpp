@@ -13,8 +13,8 @@ namespace silly_framework {
 
 class input_manager {
     std::unordered_multimap<int, vkey::code> kc_r2v_map;
-    bool key_states[1024];
-    std::mutex ks_lock;
+    volatile bool key_states[1024];
+    std::recursive_mutex ks_lock;
 public:
     // 键位表，修改后需刷新生效
     std::vector<int> key_map;
@@ -24,8 +24,8 @@ public:
 
     // 刷新键位映射
     void flush_key_map();
-    // 处理键盘事件
-    void on_key_event(int key, int action, int mods, iface_activity& active);
+    // 更新键位状态
+    bool update_key_state(int key, int scancode, int action, int mods);
     
     template <typename FuncT>
     void with_key_states(FuncT&& handler) {
@@ -33,8 +33,10 @@ public:
         handler();
     }
 
-    inline int key_code(vkey::code vkc) { return key_map[static_cast<size_t>(vkc)]; }
-    inline bool pressed(vkey::code vkc) { return key_states[key_code(vkc)]; }
+    bool has_vkey(int rkc) { return kc_r2v_map.contains(rkc); }
+    int key_code(vkey::code vkc) { return key_map[static_cast<size_t>(vkc)]; }
+    bool pressed(int rkc) { return key_states[rkc]; }
+    bool pressed(vkey::code vkc) { return key_states[key_code(vkc)]; }
 };
 
 } // namespace silly_framework

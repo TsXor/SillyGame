@@ -18,7 +18,7 @@ texman(*resldr), actman(), renman(gl_wnd), inpman() {
 
 game_window::~game_window() {}
 
-void game_window::render_loop() {
+void game_window::render_loop(std::stop_token stoken) {
     gl_wnd.use_ctx();
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         logger::is()->error("FATAL: Cannot load OpenGL with GLAD!");
@@ -27,14 +27,14 @@ void game_window::render_loop() {
     double last_render_time = gl_wnd.time();
     bool have_prepared_frame = false;
     rewheel::naive_timer timer(ticker_interval);
-    while (!gl_wnd.should_close() && !actman.empty()) {
+    while (!stoken.stop_requested()) {
         rewheel::time_guard tg(timer);
         texman.clear_texture_queue();
         // 如果之前渲染的帧用掉了，那么渲染一帧新的
         if (!have_prepared_frame) {
             gl::Clear().Color().Depth();
             renman.vscreen_viewport();
-            actman.current().render();
+            actman.render();
             have_prepared_frame = true;
         }
         // 如果距离上次显示渲染内容已经过了1/fps，那么
@@ -44,36 +44,57 @@ void game_window::render_loop() {
             last_render_time = gl_wnd.time();
             have_prepared_frame = false;
         }
-        actman.sync_current_state();
     }
 }
 
-void game_window::tick_loop() {
+void game_window::tick_loop(std::stop_token stoken) {
     double last_time = gl_wnd.time();
     rewheel::naive_timer timer(ticker_interval);
-    while (!gl_wnd.should_close() && !actman.empty()) {
+    while (!stoken.stop_requested()) {
         rewheel::time_guard tg(timer);
         double this_time = gl_wnd.time();
-        actman.with_realtime_current_do([&](iface_activity& cur) {
-            cur.tick(this_time, last_time);
-        });
+        actman.post_until(tg.limit,
+            [=](std::vector<iface_activity*>& stack) {
+                stack.back()->on_tick(this_time, last_time);
+            }
+        );
         last_time = this_time;
     }
 }
 
-void game_window::real_run() {
-    std::jthread
-        renderer(game_window::render_loop, this),
-        ticker(game_window::tick_loop, this);
-    while (!gl_wnd.should_close() && !actman.empty()) {
-        // 主线程用于处理事件
-        gl_wnd.wait_events();
+void game_window::activity_loop(silly_framework::iface_activity &start) {
+    actman.loop(start);
+    if (!gl_wnd.should_close()) {
+        gl_wnd.should_close(true);
     }
 }
 
+void game_window::real_run(iface_activity& start) {
+    std::jthread
+        renderer(render_loop, this),
+        ticker(tick_loop, this),
+        actor(activity_loop, this, std::ref(start));
+    while (!gl_wnd.should_close()) {
+        // 主线程用于处理事件
+        gl_wnd.wait_events();
+    }
+    actman.post_stop();
+}
+
+constexpr auto input_deadline = std::chrono::milliseconds(5);
+
 void game_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     auto& self = *reinterpret_cast<game_window*>(glfwGetWindowUserPointer(window));
-    self.actman.with_realtime_current_do([&](iface_activity& cur) {
-        self.inpman.on_key_event(key, action, mods, cur);
-    });
+    bool did_update = self.inpman.update_key_state(key, scancode, action, mods);
+    bool is_vkey = self.inpman.has_vkey(key);
+    self.actman.post_timeout(input_deadline,
+        [=, &self](std::vector<iface_activity*>& stack) {
+            if (!(stack.back()->vkey_only() && !is_vkey)) {
+                self.inpman.with_key_states([&]() {
+                    stack.back()->on_key_signal();
+                    if (did_update) { stack.back()->on_key_change(); }
+                });
+            }
+        }
+    );
 }

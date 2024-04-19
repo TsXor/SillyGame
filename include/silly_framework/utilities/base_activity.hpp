@@ -16,15 +16,15 @@ struct base_activity : public iface_activity {
 
     template <typename SceneT, typename... ArgTs>
     void call(ArgTs&&... args) {
-        parent.actman.emplace<SceneT>(parent, std::forward<ArgTs>(args)...);
+        parent.actman.post_emplace<SceneT>(parent, std::forward<ArgTs>(args)...);
     }
 
     template <typename SceneT, typename... ArgTs>
     void next(ArgTs&&... args) {
-        parent.actman.switch_to<SceneT>(parent, std::forward<ArgTs>(args)...);
+        parent.actman.post_switch<SceneT>(parent, std::forward<ArgTs>(args)...);
     }
 
-    void finish() { parent.actman.pop(); }
+    void finish() { parent.actman.post_pop(); }
 };
 
 } // namespace silly_framework

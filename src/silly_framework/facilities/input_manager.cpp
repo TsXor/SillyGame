@@ -26,32 +26,14 @@ void input_manager::flush_key_map() {
     }
 }
 
-void input_manager::on_key_event(int key, int action, int mods, iface_activity& active) {
-    {
-        const std::lock_guard guard(ks_lock);
-        if (action == GLFW_PRESS) { key_states[key] = true; }
-        if (action == GLFW_RELEASE) { key_states[key] = false; }
-    }
-    switch (active.key_mode()) {
-        case vkey::mode::RKEY_ONLY: {
-            active.on_key_event(vkey::code::NO_VKEY, key, action, mods);
-        } break;
-        
-        case vkey::mode::VKEY_ONLY: {
-            for (auto it = kc_r2v_map.find(key); it != kc_r2v_map.end(); ++it) {
-                active.on_key_event(it->second, key, action, mods);
-            }
-        } break;
-
-        case vkey::mode::MIXED: {
-            bool have_vkey = false;
-            for (auto it = kc_r2v_map.find(key); it != kc_r2v_map.end(); ++it) {
-                have_vkey = true;
-                active.on_key_event(it->second, key, action, mods);
-            }
-            if (!have_vkey) {
-                active.on_key_event(vkey::code::NO_VKEY, key, action, mods);
-            }
-        } break;
-    }
+bool input_manager::update_key_state(int key, int scancode, int action, int mods) {
+    const std::lock_guard guard(ks_lock);
+    auto may_update = [&](int key, bool new_state) -> bool {
+        bool did_update = key_states[key] != new_state;
+        key_states[key] = new_state;
+        return did_update;
+    };
+    if (action == GLFW_PRESS) { return may_update(key, true); }
+    if (action == GLFW_RELEASE) { return may_update(key, false); }
+    return false;
 }

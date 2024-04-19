@@ -3,16 +3,20 @@
 
 using namespace silly_framework;
 
-activity_manager::activity_manager() {}
-activity_manager::~activity_manager() {
-    sync_current_state(); // 析构当前排队的
-    while (!stack.empty()) { pop(); }
-    sync_current_state(); // 析构上一句产生的
+activity_manager::activity_manager() : event_queue(1024) {}
+activity_manager::~activity_manager() {}
+
+void activity_manager::loop(iface_activity& start) {
+    stack.push_back(&start);
+    while (true) {
+        auto op = event_queue.get();
+        const std::lock_guard guard(render_lock);
+        op(stack);
+        if (stack.empty()) { break; }
+    }
 }
 
-void activity_manager::sync_current_state() {
-    const std::lock_guard guard(op_lock);
-    for (auto act : poped) { delete act; }
-    poped.clear();
-    cur_snapshot = stack.empty() ? nullptr : stack.back();
+void activity_manager::render() {
+    const std::lock_guard guard(render_lock);
+    if (!stack.empty()) { stack.back()->render(); }
 }

@@ -26,6 +26,7 @@ struct method_traits<RetT(ClsT::*)(ArgTs...)> {
  * 非常好协程，使我不用手写状态机。
  */
 class coro_host {
+protected:
     template <typename Derived, typename RetT>
     // CRTP，很神奇吧
     struct base_event {
@@ -44,59 +45,65 @@ class coro_host {
         }
 
         template <typename... Ts>
-        void set_return(Ts... params) {
-            data.template emplace<RetT>(params...);
+        void set_return(Ts&&... params) {
+            data.template emplace<RetT>(std::forward<Ts>(params)...);
         }
     };
     
-    using keys_ret_type = method_traits<decltype(iface_activity::on_key_event)>::param_tuple_type;
-    using tick_ret_type = method_traits<decltype(iface_activity::tick)>::param_tuple_type;
+    using key_change_ret_type = method_traits<decltype(iface_activity::on_key_change)>::param_tuple_type;
+    using key_signal_ret_type = method_traits<decltype(iface_activity::on_key_signal)>::param_tuple_type;
+    using tick_ret_type = method_traits<decltype(iface_activity::on_tick)>::param_tuple_type;
 
 public:
-    struct keys_event : public base_event<keys_event, keys_ret_type> {
-        void register_pending(coro_host& host) { host.keys_pending.emplace_back(this); }
+    struct key_change_event : public base_event<key_change_event, key_change_ret_type> {
+        void register_pending(coro_host& host) { host.key_change_pending.emplace_back(this); }
+    };
+    struct key_signal_event : public base_event<key_signal_event, key_signal_ret_type> {
+        void register_pending(coro_host& host) { host.key_signal_pending.emplace_back(this); }
     };
     struct tick_event : public base_event<tick_event, tick_ret_type>  {
         void register_pending(coro_host& host) { host.tick_pending.emplace_back(this); }
     };
 
 protected:
-    std::list<keys_event*> keys_pending;
+    std::list<key_change_event*> key_change_pending;
+    std::list<key_signal_event*> key_signal_pending;
     std::list<tick_event*> tick_pending;
+
+    template <typename EventT, typename... ArgTs>
+    void process_all_of(std::list<EventT>& pending, ArgTs&&... args) {
+        std::list<EventT> tmp;
+        pending.swap(tmp);
+        for (auto&& evt : tmp) {
+            evt->set_return(std::forward<ArgTs>(args)...);
+            evt->caller.resume();
+        }
+    }
 
 public:
     coro_host() {}
     ~coro_host() {
-        for (auto&& evt : keys_pending) { evt->caller.destroy(); }
+        for (auto&& evt : key_change_pending) { evt->caller.destroy(); }
+        for (auto&& evt : key_signal_pending) { evt->caller.destroy(); }
         for (auto&& evt : tick_pending) { evt->caller.destroy(); }
     }
 
 
-    void on_key_event(vkey::code vkc, int rkc, int action, int mods) {
-        decltype(keys_pending) pending;
-        pending.swap(keys_pending);
-        for (auto&& evt : pending) {
-            evt->set_return(vkc, rkc, action, mods);
-            evt->caller.resume();
-        }
-    }
-    void tick(double this_time, double last_time) {
-        decltype(tick_pending) pending;
-        pending.swap(tick_pending);
-        for (auto&& evt : pending) {
-            evt->set_return(this_time, last_time);
-            evt->caller.resume();
-        }
+    void on_key_change() { process_all_of(key_change_pending); }
+    void on_key_signal() { process_all_of(key_signal_pending); }
+    void on_tick(double this_time, double last_time) {
+        process_all_of(tick_pending, this_time, last_time);
     }
 
-    auto co_keys() { return keys_event(this); }
-    auto co_tick() { return tick_event(this); }
+    auto key_change() { return key_change_event(this); }
+    auto key_signal() { return key_signal_event(this); }
+    auto tick() { return tick_event(this); }
 
     template <typename FuncT>
-    coutils::async_fn<void> co_filter_key(FuncT filter) {
+    coutils::async_fn<void> filter_key(FuncT filter) {
         while (true) {
-            auto&& [vkc, rkc, action, mods] = co_await co_keys();
-            if (filter(vkc, rkc, action, mods)) { break; }
+            co_await key_change();
+            if (filter()) { break; }
         }
     }
 };
