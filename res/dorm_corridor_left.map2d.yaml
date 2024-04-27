@@ -1,0 +1,5 @@
+file: "dorm_corridor_left.png"
+name: "dorm_corridor_left"
+blocks:
+    -   uv: [0, 128, 0, 256]
+        at: [0, 0]

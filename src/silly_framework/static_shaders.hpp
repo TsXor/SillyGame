@@ -9,8 +9,8 @@
 namespace shaders {
 
 namespace files {
-gl::ShaderSource& transform_shape();
 gl::ShaderSource& use_texture();
+gl::ShaderSource& transform_shape();
 } // namespace files
 
 namespace programs {
