@@ -7,37 +7,12 @@
 #include <list>
 #include <span>
 #include <coutils.hpp>
+#include <silly_framework/rewheel/hash_utils.hpp>
 #include "./basics.hpp"
 
 namespace naive_engine {
 
-struct hitbox_group {
-    void* parent;
-    basics::vec2 offset;
-    std::span<const basics::aabb> boxes;
-};
-
-struct grouped_hitbox_ref {
-    hitbox_group& parent;
-    size_t idx;
-    basics::aabb operator*() const { return parent.boxes[idx].offset(parent.offset); }
-};
-
-static inline bool operator==(const grouped_hitbox_ref& r1, const grouped_hitbox_ref& r2) {
-    return (&r1.parent == &r2.parent) && (r1.idx == r2.idx);
-}
-
-} // namespace naive_engine
-
-template<> struct std::hash<naive_engine::grouped_hitbox_ref> {
-    std::size_t operator()(const naive_engine::grouped_hitbox_ref& ref) const noexcept{
-        std::size_t h1 = std::hash<void*>{}(&ref.parent);
-        std::size_t h2 = std::hash<size_t>{}(ref.idx);
-        return h1 ^ (h2 << 1);
-    }
-};
-
-namespace naive_engine {
+namespace sf = silly_framework;
 
 /**
  *  一秒钟寄个弹词：
@@ -54,35 +29,58 @@ namespace naive_engine {
  * 网格宽松四叉树的简单实现，用于记录动态物体
  */
 class grid_loose_quadtree {
+public:
+    struct hitbox {
+        void* parent;
+        basics::aabb box;
+        basics::vec2 offset;
+        auto abs_box() { return box.offset(offset); }
+    };
+
+    using hitbox_list = std::list<hitbox>;
+    using handle_type = hitbox_list::iterator;
+    using hitbox_set = sf::utils::listit_uset<handle_type>;
+
 protected:
     template <typename T>
     using vtree_type = std::vector<T>;
-    using hitbox_set = std::unordered_set<grouped_hitbox_ref>;
 
     unsigned char max_depth;
+    hitbox_list box_data;
     vtree_type<hitbox_set> vtree;
-    std::list<hitbox_group> box_data;
     double scene_width, scene_height;
 
     basics::aabb normalize(const basics::aabb& box);
     hitbox_set& box_pos(const basics::aabb& box);
 
 public:
-    using handle_type = decltype(box_data)::iterator;
-
     grid_loose_quadtree(unsigned char depth, double width, double height);
     ~grid_loose_quadtree();
 
+    // 获取场景大小 
     std::tuple<double, double> scene_size() const { return {scene_width, scene_height}; }
+    // 重设场景大小，会导致重新建树
+    void scene_size(double width, double height) {
+        scene_width = width; scene_height = height;
+        retree_boxes();
+    }
+    // 清除树内容
+    void reset();
+    // 清除树内容并重设场景大小
+    void reset(double width, double height) {
+        reset(); scene_width = width; scene_height = height;
+    }
 
     // 添加碰撞箱
-    handle_type add_box(void* parent, const basics::vec2& offset, const std::span<const basics::aabb>& boxes);
+    handle_type add_box(void* parent, const basics::aabb& box, const basics::vec2& offset);
     // 删除碰撞箱
-    void del_box(handle_type group);
+    void del_box(handle_type hbox);
     // 移动碰撞箱
-    void move_box(handle_type group, const basics::vec2& v);
+    void move_box(handle_type hbox, const basics::vec2& v);
+    // 重新建树
+    void retree_boxes();
     // 枚举相交的aabb
-    auto may_collide(const grouped_hitbox_ref& boxptr) -> coutils::generator<grouped_hitbox_ref>;
+    auto may_collide(handle_type hbox) -> coutils::generator<handle_type>;
 };
 
 } // namespace naive_engine

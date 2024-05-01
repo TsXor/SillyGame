@@ -11,10 +11,21 @@ struct coord { int x; int y; };
 
 struct position {
     int left, right, top, bottom;
+    
     int width() const { return right - left; }
     int height() const { return bottom - top; }
     static inline std::optional<position> intersect(const position& pos1, const position& pos2);
     auto intersect(const position& other) const { return intersect(*this, other); }
+    coord center() const { return {(left + right) / 2, (top + bottom) / 2}; }
+    
+    position& operator+=(const coord& off) {
+        left += off.x; right += off.x; top += off.y; bottom += off.y;
+        return *this;
+    }
+    position& operator-=(const coord& off) {
+        left -= off.x; right -= off.x; top -= off.y; bottom -= off.y;
+        return *this;
+    }
 };
 
 std::optional<position> position::intersect(const position& pos1, const position& pos2){

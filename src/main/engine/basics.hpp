@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cfloat>
 #include <vector>
+#include <variant>
 
 namespace naive_engine::basics {
 
@@ -18,6 +19,7 @@ struct vec2 {
     
     double mag() const { return std::hypot(x, y); } // 模长
     vec2 normal() const { return {-y, x}; } // 法向量
+    inline vec2 unit() const;
     bool nonzero() const { return dbl_nonzero(x) || dbl_nonzero(y); }
     vec2& operator+=(const vec2& other) {
         x += other.x; y += other.y;
@@ -44,6 +46,7 @@ static inline vec2 operator/(const vec2& v, double k) {
 static inline double operator*(const vec2& a, const vec2& b) {
     return a.x * b.x + a.y * b.y;
 }
+vec2 vec2::unit() const { return (*this) / mag(); }
 
 struct aabb {
     double left, right, top, bottom;
@@ -58,23 +61,20 @@ struct aabb {
     bool have_overlap(const aabb& other) const { return have_overlap(*this, other); }
 };
 
+static inline aabb operator+(const aabb& box, const vec2& off) {
+    return {box.left + off.x, box.right + off.x, box.top + off.y, box.bottom + off.y};
+}
+static inline aabb operator-(const aabb& box, const vec2& off) {
+    return {box.left - off.x, box.right - off.x, box.top - off.y, box.bottom - off.y};
+}
+
 using poly_verts = std::vector<basics::vec2>;
 using poly_verts_view = std::span<vec2>;
 using poly_verts_const_view = std::span<const vec2>;
-
-struct polygon_const_ref {
-    const aabb& box;
-    const poly_verts_const_view vertices;
-};
-
-struct polygon_ref {
-    aabb& box;
-    const poly_verts_view vertices;
-    operator polygon_const_ref() { return {box, vertices}; }
-};
+using convex_variant = std::variant<basics::aabb, basics::poly_verts>;
 
 // 检查多边形碰撞并返回1离开2所需的MTV（Minimum Translation Vector，最小平移向量）
-vec2 polygon_colldet(const polygon_const_ref& poly1, const polygon_const_ref& poly2, const vec2& offset21);
+vec2 polygon_colldet(const convex_variant& poly1, const convex_variant& poly2, const vec2& offset21);
 
 } // namespace naive_engine::basics
 

@@ -28,6 +28,7 @@ public:
     glm::mat4 tex_mat(unsigned int width, unsigned int height) const;
     // 将此素材渲染到“虚拟屏幕”上的指定位置，并对坐标施加线性变换
     void render(game_window& wnd, const glut::position& xy, const glm::mat4& transform = glut::eye4) const;
+    void render(game_window& wnd, int cx, int cy, double scalev, const glm::mat4& transform = glut::eye4) const;
 };
 
 } // namespace silly_framework

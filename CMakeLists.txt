@@ -14,13 +14,18 @@ set(SPDLOG_USE_STD_FORMAT ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/spdlog)
 
 
+function(mingw_static_lib TARGET)
+    if(MINGW)
+        target_link_libraries(${TARGET} PRIVATE -static gcc stdc++ winpthread -dynamic)
+    endif()
+endfunction(mingw_static_lib)
+
 function(make_windows_compiler_happy TARGET)
     if(WIN32)
         if(MSVC)
             target_link_options(${TARGET} PRIVATE "/subsystem:Windows /entry:mainCRTStartup /utf-8")
         elseif(MINGW)
             target_link_options(${TARGET} PRIVATE "-mwindows")
-            target_link_libraries(${TARGET} PRIVATE -static gcc stdc++ winpthread -dynamic)
         endif()
     endif()
 endfunction(make_windows_compiler_happy)
@@ -43,6 +48,7 @@ target_link_libraries(SillyFramework PRIVATE uv-cpp)
 target_link_libraries(SillyFramework PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
 if(WIN32)
     target_link_libraries(SillyFramework PRIVATE imm32)
+    mingw_static_lib(SillyFramework)
 endif()
 
 
