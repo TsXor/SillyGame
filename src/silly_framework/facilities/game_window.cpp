@@ -20,7 +20,7 @@ game_window::~game_window() {}
 
 void game_window::render_loop(std::stop_token stoken) {
     gl_wnd.use_ctx();
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!sillyFrameworkGladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         logger::is()->error("FATAL: Cannot load OpenGL with GLAD!");
         gl_wnd.should_close(true); return;
     }

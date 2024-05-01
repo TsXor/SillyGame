@@ -7,12 +7,13 @@
 #include <thread>
 #include <atomic>
 #include <functional>
+#include "silly_framework/config.h"
 #include "silly_framework/rewheel/circ_queue.hpp"
 #include "silly_framework/facilities/iface_activity.hpp"
 
 namespace silly_framework {
 
-class activity_manager {
+class SF_EXPORT activity_manager {
     using stack_type = std::vector<iface_activity*>;
     using stack_operator = std::function<void(stack_type&)>;
     stack_type stack;

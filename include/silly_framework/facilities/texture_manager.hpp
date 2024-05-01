@@ -6,6 +6,7 @@
 #include <optional>
 #include <mutex>
 #include <coutils.hpp>
+#include "silly_framework/config.h"
 #include "silly_framework/rewheel/gpu_tex_img.hpp"
 #include "silly_framework/rewheel/swap_queue.hpp"
 #include "silly_framework/rewheel/naive_lru.hpp"
@@ -21,7 +22,7 @@ class res_loader;
  *   - 这个类的代码很大程度上依赖于“纹理缓存至少足够保存当前使用的纹理”这个事实。
  *     如果纹理缓存过小，图片将不断重复加载，还可能发生一些不可预测的问题。
  */
-class texture_manager {
+class SF_EXPORT texture_manager {
     // GPU纹理缓存上限，单位：字节
     static constexpr size_t gpu_mem_thresh = 64 << 20; // MB
     // CPU纹理缓存上限，单位：字节

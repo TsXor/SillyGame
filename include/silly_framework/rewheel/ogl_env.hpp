@@ -3,6 +3,7 @@
 #define __SFLIB_GLFW_CONTEXT__
 
 #include <tuple>
+#include "silly_framework/config.h"
 #include "silly_framework/ogl/glfw.h"
 
 namespace silly_framework::glenv {
@@ -12,7 +13,7 @@ namespace silly_framework::glenv {
  * 第一个引用构造时，初始化OpenGL环境。
  * 最后一个引用析构时，关闭OpenGL环境。
  */
-struct ctx_ref {
+struct SF_EXPORT ctx_ref {
     ctx_ref();
     ~ctx_ref();
 };
@@ -22,7 +23,7 @@ struct ctx_ref {
  * 注：默认情况下，窗口初始化在处于屏幕中央且可以随意缩放，要改变这个行为，
  *     可以在对象构造后调用GLFW API修改窗口属性。
  */
-struct window {
+struct SF_EXPORT window {
     using handle_type = GLFWwindow*;
     const ctx_ref ctx;
     handle_type hwnd;

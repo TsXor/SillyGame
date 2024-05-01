@@ -6,6 +6,7 @@
 #include <functional>
 #include <chrono>
 #include <memory>
+#include "silly_framework/config.h"
 #include "silly_framework/rewheel/ogl_env.hpp"
 #include "silly_framework/facilities/texture_manager.hpp"
 #include "silly_framework/facilities/activity_manager.hpp"
@@ -20,7 +21,7 @@ class res_jloader;
  * 游戏窗口类。
  * 这个类主要负责将一众部件打包在一起，具体的功能由各个部件分别实现。
  */
-class game_window {
+class SF_EXPORT game_window {
     using base_duration = std::chrono::microseconds;
 
     void render_loop(std::stop_token stoken);

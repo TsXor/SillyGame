@@ -4,6 +4,7 @@
 
 #include <string>
 #include <unordered_set>
+#include "silly_framework/config.h"
 
 namespace silly_framework::vkey {
 
@@ -24,10 +25,10 @@ struct info {
 };
 
 // 虚拟按键码的总数量
-size_t code_count();
+SF_EXPORT size_t code_count();
 
 // 获取指定虚拟按键码的信息
-const info& code_info(code c);
+SF_EXPORT const info& code_info(code c);
 
 } // namespace silly_framework::vkey
 

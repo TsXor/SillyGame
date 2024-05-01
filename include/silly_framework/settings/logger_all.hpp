@@ -8,9 +8,9 @@
 namespace silly_framework::logger {
 
 // 获取logger
-std::shared_ptr<spdlog::logger> is();
+SF_EXPORT std::shared_ptr<spdlog::logger> is();
 // 设置logger
-void is(std::shared_ptr<spdlog::logger> logger);
+SF_EXPORT void is(std::shared_ptr<spdlog::logger> logger);
 
 } // namespace silly_framework::logger
 

@@ -5,13 +5,14 @@
 #include <vector>
 #include <mutex>
 #include <unordered_map>
+#include "silly_framework/config.h"
 #include "silly_framework/rewheel/ogl_env.hpp"
 #include "silly_framework/facilities/vkey_def.hpp"
 #include "silly_framework/facilities/iface_activity.hpp"
 
 namespace silly_framework {
 
-class input_manager {
+class SF_EXPORT input_manager {
     std::unordered_multimap<int, vkey::code> kc_r2v_map;
     volatile bool key_states[1024];
     std::recursive_mutex ks_lock;

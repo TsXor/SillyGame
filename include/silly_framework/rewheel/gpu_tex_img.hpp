@@ -2,15 +2,16 @@
 #ifndef __SFLIB_GPU_TEX_IMG__
 #define __SFLIB_GPU_TEX_IMG__
 
+#include "silly_framework/config.h"
 #include "silly_framework/ogl/oglwrap.hpp"
 #include "silly_framework/rewheel/stb_image.hpp"
 
 namespace silly_framework::rewheel {
 
 // 将已读取的图片加载到GPU纹理，需要在主线程执行
-gl::Texture2D load_texture2d_from_stb(const stb_decoded_image_view &img);
+SF_EXPORT gl::Texture2D load_texture2d_from_stb(const stb_decoded_image_view &img);
 
-struct gpu_tex2d {
+struct SF_EXPORT gpu_tex2d {
     int width, height, n_channels;
     gl::Texture2D tex;
 

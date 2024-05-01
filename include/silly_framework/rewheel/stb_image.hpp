@@ -3,6 +3,7 @@
 #define __SFLIB_STB_IMAGE_LOADER__
 
 #include <cstdint>
+#include "silly_framework/config.h"
 
 namespace silly_framework::rewheel {
 
@@ -12,7 +13,7 @@ struct stb_decoded_image_view {
     size_t mem_size() { return width * height * n_channels; }
 };
 
-struct stb_decoded_image : stb_decoded_image_view {
+struct SF_EXPORT stb_decoded_image : stb_decoded_image_view {
     stb_decoded_image();
     stb_decoded_image(const byte* data, size_t data_len);
     ~stb_decoded_image();

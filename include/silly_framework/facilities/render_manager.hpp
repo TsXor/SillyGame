@@ -5,12 +5,13 @@
 #include <string>
 #include <tuple>
 #include <optional>
+#include "silly_framework/config.h"
 #include "silly_framework/rewheel/ogl_utils.hpp"
 #include "silly_framework/rewheel/ogl_env.hpp"
 
 namespace silly_framework {
 
-class render_manager {
+class SF_EXPORT render_manager {
     using position = glut::position;
     // OpenGL窗口
     glenv::window& gl_wnd;

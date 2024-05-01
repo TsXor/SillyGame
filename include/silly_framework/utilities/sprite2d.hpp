@@ -3,6 +3,7 @@
 #define __SFUT_SPRITE_2D__
 
 #include <string>
+#include "silly_framework/config.h"
 #include "silly_framework/rewheel/ogl_utils.hpp"
 
 namespace silly_framework {
@@ -14,7 +15,7 @@ class game_window;
  * 我们默认一个素材指的是一个固定图像上固定的一部分，所以它的uv是固定的。
  * 此类使用了一个简单的缓存，uv变换矩阵只计算一次。
  */
-class sprite2d {
+class SF_EXPORT sprite2d {
 protected:
     std::string file_path;
     glut::position uvpos;

@@ -5,6 +5,7 @@
 #include <string>
 #include <span>
 #include <coutils.hpp>
+#include "silly_framework/config.h"
 #include "silly_framework/rewheel/ogl_utils.hpp"
 
 namespace silly_framework {
@@ -16,7 +17,7 @@ class game_window;
  * 一个地图图像由若干“地图块”构成，每个“地图块”可看作一个素材。
  * 此类使用了一个简单的缓存，uv变换矩阵只计算一次。
  */
-class map2d {
+class SF_EXPORT map2d {
 public:
     using block_pos = std::pair<glut::position, glut::coord>;
 protected:
