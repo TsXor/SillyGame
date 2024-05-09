@@ -86,6 +86,8 @@ inline glm::mat4 xy_trans(position xy, unsigned int width, unsigned int height, 
     return m;
 }
 
+inline const auto full_xy = xy_trans({0, 1, 0, 1}, 1, 1, eye4);
+
 // 给定uv位置，算出素材的坐标变换矩阵
 inline glm::mat4 uv_trans(position uv, unsigned int width, unsigned int height, const glm::mat4& transform) {
     // 事实上uv位置和xy位置算法一样
@@ -95,6 +97,8 @@ inline glm::mat4 uv_trans(position uv, unsigned int width, unsigned int height, 
     m = glm::translate(m, glm::vec3(1.0f, 1.0f, 0.0f));
     return m * xy_trans(uv, width, height, transform);
 }
+
+inline const auto full_uv = uv_trans({0, 1, 0, 1}, 1, 1, eye4);
 
 } // namespace silly_framework::glut
 
