@@ -22,3 +22,6 @@
 [submodule "extlibs/glfw"]
 	path = extlibs/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "extlibs/sf_boost_deps"]
+	path = extlibs/sf_boost_deps
+	url = https://github.com/TsXor/sf_boost_deps.git
