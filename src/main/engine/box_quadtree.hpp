@@ -2,17 +2,17 @@
 #ifndef __NAIVE_QUADTREE__
 #define __NAIVE_QUADTREE__
 
-#include <vector>
-#include <unordered_set>
-#include <list>
-#include <span>
 #include <coutils.hpp>
-#include <silly_framework/rewheel/hash_utils.hpp>
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_set_of.hpp>
+#include <boost/bimap/unordered_multiset_of.hpp>
 #include "./basics.hpp"
 
 namespace naive_engine {
 
-namespace sf = silly_framework;
+using boost::bimap;
+using boost::bimaps::unordered_set_of;
+using boost::bimaps::unordered_multiset_of;
 
 /**
  *  一秒钟寄个弹词：
@@ -31,27 +31,20 @@ namespace sf = silly_framework;
 class grid_loose_quadtree {
 public:
     struct hitbox {
-        void* parent;
         basics::aabb box;
-        basics::vec2 offset;
+        basics::vec2 offset = {0, 0};
         auto abs_box() { return box.offset(offset); }
     };
 
-    using hitbox_list = std::list<hitbox>;
-    using handle_type = hitbox_list::iterator;
-    using hitbox_set = sf::utils::listit_uset<handle_type>;
-
 protected:
-    template <typename T>
-    using vtree_type = std::vector<T>;
-
     unsigned char max_depth;
-    hitbox_list box_data;
-    vtree_type<hitbox_set> vtree;
+    bimap<unordered_multiset_of<size_t>, unordered_set_of<hitbox*>> vtree;
     double scene_width, scene_height;
 
     basics::aabb normalize(const basics::aabb& box);
-    hitbox_set& box_pos(const basics::aabb& box);
+    auto box_pos(const basics::aabb& box) -> std::tuple<size_t, size_t, unsigned char>;
+    size_t box_idx(const basics::aabb& box);
+    size_t max_idx();
 
 public:
     grid_loose_quadtree(unsigned char depth, double width, double height);
@@ -72,15 +65,15 @@ public:
     }
 
     // 添加碰撞箱
-    handle_type add_box(void* parent, const basics::aabb& box, const basics::vec2& offset);
+    void add_box(hitbox* hbox);
     // 删除碰撞箱
-    void del_box(handle_type hbox);
+    void del_box(hitbox* hbox);
     // 移动碰撞箱
-    void move_box(handle_type hbox, const basics::vec2& v);
+    void move_box(hitbox* hbox, const basics::vec2& v);
     // 重新建树
     void retree_boxes();
     // 枚举相交的aabb
-    auto may_collide(handle_type hbox) -> coutils::generator<handle_type>;
+    auto may_collide(hitbox* hbox) -> coutils::generator<hitbox*>;
 };
 
 } // namespace naive_engine

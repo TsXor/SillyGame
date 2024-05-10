@@ -18,7 +18,7 @@ avg_scene::string_map<acts::avg_scene::script_t> avg_scene::scene_scripts = {
 
 avg_scene::entity_comp_t avg_scene::default_sprites_sorter() {
     return [](const entity_t& e1, const entity_t& e2) -> bool {
-        return e1->hbox->offset.y < e2->hbox->offset.y;
+        return e1.hbox.offset.y < e2.hbox.offset.y;
     };
 }
 
@@ -32,7 +32,7 @@ avg_scene::~avg_scene() {}
 
 void avg_scene::on_tick(double this_time, double last_time) {
     auto&& [kbd_ent, kbd_vel] = keyboard_controlled;
-    if (kbd_ent != simu_t::null_handle()) {
+    if (kbd_ent != nullptr) {
         kbd_ent->velocity = velocity_direction * kbd_vel * base_velocity;
     }
 
@@ -44,8 +44,8 @@ void avg_scene::on_tick(double this_time, double last_time) {
         }
     }
 
-    if (camera_attached != simu_t::null_handle() && bound_map) {
-        auto offset = camera_attached->hbox->offset / bound_map->scalev;
+    if (camera_attached != nullptr && bound_map) {
+        auto offset = camera_attached->hbox.offset / bound_map->scalev;
         camera_pos = {int(offset.x), int(offset.y)};
     }
 }
@@ -79,12 +79,12 @@ void avg_scene::render() {
     using sortee_type = decltype(sprites)::value_type;
     std::sort(sprites.begin(), sprites.end(),
         [&](const sortee_type& lhs, const sortee_type& rhs) {
-            return sprites_sorter(lhs->first, rhs->first);
+            return sprites_sorter(*lhs->first, *rhs->first);
         }
     );
     for (auto&& ptr : sprites) {
         auto&& [ent, spr] = *ptr;
-        auto offset = ent->hbox->offset / spr.scalev;
+        auto offset = ent->hbox.offset / spr.scalev;
         spr.render(parent, glut::coord{int(offset.x), int(offset.y)} - camera_pos);
     }
 }

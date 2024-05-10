@@ -6,25 +6,28 @@ simulator::simulator(double width, double height):
     boxtree(6, width, height) {}
 simulator::~simulator() {}
 
-simulator::handle_type simulator::make_entity(const basics::vec2& pos) {
-    auto ent = --entities.end();
-    ent->hbox = boxtree.add_box(std::bit_cast<void*>(ent), ent->coarse(), pos);
-    return ent;
-}
-void simulator::del_entity(handle_type entity) {
-    boxtree.del_box(entity->hbox);
-    entities.erase(entity);
+auto hitbox_to_entity(grid_loose_quadtree::hitbox* hbox) {
+    return reinterpret_cast<simulator::entity_t*>(hbox);
 }
 
-void simulator::teleport_entity_offset(handle_type entity, basics::vec2 offset) {
-    boxtree.move_box(entity->hbox, offset);
+void simulator::add_entity(entity_node_t& entity) {
+    boxtree.add_box(&entity.data.hbox);
+    entities.push_back(entity);
 }
-void simulator::teleport_entity_center(handle_type entity, basics::vec2 center) {
-    boxtree.move_box(entity->hbox, center - entity->hbox->offset);
+void simulator::del_entity(entity_node_t& entity) {
+    boxtree.del_box(&entity.data.hbox);
+    entity.unlink();
 }
 
-auto simulator::colldet_from(handle_type entity) -> coutils::generator<std::pair<handle_type, basics::vec2>> {
-    auto box = entity->hbox->box + entity->hbox->offset;
+void simulator::teleport_entity_offset(entity_t* entity, basics::vec2 offset) {
+    boxtree.move_box(&entity->hbox, offset);
+}
+void simulator::teleport_entity_center(entity_t* entity, basics::vec2 center) {
+    boxtree.move_box(&entity->hbox, center - entity->hbox.offset);
+}
+
+auto simulator::colldet_from(entity_t* entity) -> coutils::generator<std::pair<entity_t*, basics::vec2>> {
+    auto box = entity->hbox.abs_box();
     auto [scw, sch] = boxtree.scene_size();
     // 检查边缘碰撞
     if (box.width() >= scw || box.height() >= sch) { co_return; }
@@ -33,23 +36,23 @@ auto simulator::colldet_from(handle_type entity) -> coutils::generator<std::pair
     if (box.right > scw) { border_mtv.x = scw - box.right; }
     if (box.top < 0) { border_mtv.y = -box.top; }
     if (box.bottom > sch) { border_mtv.y = sch - box.bottom; }
-    if (border_mtv.nonzero()) { co_yield coutils::inituple(null_handle(), border_mtv); }
+    if (border_mtv.nonzero()) { co_yield coutils::inituple(nullptr, border_mtv); }
     // 检查真实碰撞
-    for (auto&& possible : boxtree.may_collide(entity->hbox)) {
-        auto other = std::bit_cast<handle_type>(possible->parent);
+    for (auto&& possible : boxtree.may_collide(&entity->hbox)) {
+        auto other = hitbox_to_entity(possible);
         auto mtv = basics::polygon_colldet(
             entity->convex, other->convex,
-            other->hbox->offset - entity->hbox->offset
+            other->hbox.offset - entity->hbox.offset
         );
         if (mtv.nonzero()) { co_yield coutils::inituple(other, mtv); }
     }
 }
 
-auto simulator::colldet_from_sources() -> coutils::generator<std::tuple<handle_type, handle_type, basics::vec2>> {
+auto simulator::colldet_from_sources() -> coutils::generator<std::tuple<entity_t*, entity_t*, basics::vec2>> {
     for (auto&& ent : colldet_source) {
         for (auto&& [other, mtv] : colldet_from(ent)) {
             if (!mtv.nonzero()) { continue; }
-            if (other == null_handle()) {
+            if (other == nullptr) {
                 teleport_entity_offset(ent, mtv);
             } else if (ent->flags.repulsive && other->flags.repulsive) {
                 if (!ent->flags.fixed && !other->flags.fixed) {
@@ -69,6 +72,6 @@ auto simulator::colldet_from_sources() -> coutils::generator<std::tuple<handle_t
 
 void simulator::on_tick(double dt) {
     for (auto&& entity : entities) {
-        boxtree.move_box(entity.hbox, entity.velocity * dt);
+        boxtree.move_box(&entity.data.hbox, entity.data.velocity * dt);
     }
 }

@@ -73,6 +73,33 @@ using poly_verts_view = std::span<vec2>;
 using poly_verts_const_view = std::span<const vec2>;
 using convex_variant = std::variant<basics::aabb, basics::poly_verts>;
 
+static inline auto make_convex_variant(const aabb& rect) {
+    return convex_variant(std::in_place_type<basics::aabb>, rect);
+}
+static inline auto make_convex_variant(const poly_verts_const_view& poly) {
+    return convex_variant(std::in_place_type<basics::poly_verts>, poly.begin(), poly.end());
+}
+static inline auto make_convex_variant(poly_verts&& poly) {
+    return convex_variant(std::in_place_type<basics::poly_verts>, std::move(poly));
+}
+
+static inline aabb coarse(const convex_variant& convex) {
+    if (std::holds_alternative<aabb>(convex)) {
+        return std::get<aabb>(convex);
+    } else if (std::holds_alternative<poly_verts>(convex)) {
+        aabb box{DBL_MAX, DBL_MIN, DBL_MAX, DBL_MIN};
+        for (auto&& vert : std::get<poly_verts>(convex)) {
+            box.left = std::min(box.left, vert.x);
+            box.right = std::max(box.right, vert.x);
+            box.top = std::min(box.top, vert.x);
+            box.bottom = std::max(box.bottom, vert.x);
+        }
+        return box;
+    } else {
+        return {};
+    }
+}
+
 // 检查多边形碰撞并返回1离开2所需的MTV（Minimum Translation Vector，最小平移向量）
 vec2 polygon_colldet(const convex_variant& poly1, const convex_variant& poly2, const vec2& offset21);
 

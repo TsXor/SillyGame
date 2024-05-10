@@ -3,26 +3,15 @@
 #define __ACTIVITY_COROUTINE_HOST__
 
 #include <tuple>
-#include <variant>
-#include <list>
 #include <any>
-#include <unordered_map>
-#include <unordered_set>
 #include <coroutine>
-#include <coutils.hpp>
-#include "silly_framework/rewheel/map_utils.hpp"
-#include "silly_framework/facilities/iface_activity.hpp"
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_multiset_of.hpp>
 
 namespace silly_framework {
 
-template <typename T>
-struct method_traits {};
-template <typename ClsT, typename RetT, typename... ArgTs>
-struct method_traits<RetT(ClsT::*)(ArgTs...)> {
-    using class_type = ClsT;
-    using return_type = RetT;
-    using param_tuple_type = std::tuple<ArgTs...>;
-};
+using boost::bimap;
+using boost::bimaps::unordered_multiset_of;
 
 /**
  * 这个类的作用是放在一个activity中以运行协程。
@@ -35,8 +24,7 @@ public:
     template <size_t code> struct code_info {};
 
 protected:
-    std::unordered_multimap<size_t, subscriber*> pending;
-    std::unordered_multimap<subscriber*, decltype(pending)::iterator> relation;
+    bimap<unordered_multiset_of<size_t>, unordered_multiset_of<subscriber*>> pending;
 
     template <typename RetT, typename... ArgTs>
     inline void process_all_of(size_t code, ArgTs&&... args);
@@ -48,10 +36,7 @@ protected:
     }
 
     void add_subscriber(subscriber* sub, enum_set& codes) {
-        for (auto&& code : codes) {
-            auto it = pending.emplace(code, sub);
-            relation.emplace(sub, it);
-        }
+        for (auto&& code : codes) { pending.insert({code, sub}); }
     }
 
 public:
@@ -122,15 +107,8 @@ coro_host_base::~coro_host_base() {
 
 template <typename RetT, typename... ArgTs>
 void coro_host_base::process_all_of(size_t code, ArgTs&&... args) {
-    // 写成这个样子的原因是这一段在做一种在飞机上拆飞机的操作。
-    auto targets = utils::multimap_equal_range(pending, code);
-    for (auto it = targets.begin(); it != targets.end() && it != pending.end(); ) {
-        auto sub = (it++)->second;
-        auto other_subs = utils::multimap_equal_range(relation, sub);
-        for (auto it = other_subs.begin(); it != other_subs.end() && it != relation.end(); ) {
-            pending.erase(it->second);
-            relation.erase(it++);
-        }
+    for (auto it = pending.left.find(code); it != pending.left.end() && it->first == code;) {
+        auto sub = (it++)->second; pending.right.erase(sub);
         sub->template fulfill<RetT>(code, std::forward<ArgTs>(args)...);
     }
 }

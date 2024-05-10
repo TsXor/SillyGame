@@ -32,17 +32,11 @@ struct upair_equal {
     }
 };
 
-template <typename It>
-using listit_uset = std::unordered_set<It, hash_as_ptr<It>>;
+template <typename K, typename V>
+using unordered_upair_set = std::unordered_set<upair<K>, upair_hash<K>, upair_equal<K>>;
 
-template <typename It, typename V>
-using listit_umap = std::unordered_map<It, V, hash_as_ptr<It>>;
-
-template <typename It>
-using listit_upair_uset = std::unordered_set<upair<It>, upair_hash<It, hash_as_ptr>, upair_equal<It>>;
-
-template <typename It, typename V>
-using listit_upair_umap = std::unordered_map<upair<It>, V, upair_hash<It, hash_as_ptr>, upair_equal<It>>;
+template <typename K, typename V>
+using unordered_upair_map = std::unordered_map<upair<K>, V, upair_hash<K>, upair_equal<K>>;
 
 } // namespace silly_framework::utils
 

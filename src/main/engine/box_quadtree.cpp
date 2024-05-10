@@ -25,12 +25,12 @@ static inline ssize_t pos_idx(double pos, unsigned char depth) {
     return pos * static_cast<double>(size_t(1) << depth);
 }
 
-static inline size_t combine_idx(ssize_t x, ssize_t y, unsigned char depth) {
+static inline size_t combine_idx(size_t x, size_t y, unsigned char depth) {
     return layer_start(depth) + ((y << depth) | x);
 }
 
 grid_loose_quadtree::grid_loose_quadtree(unsigned char depth, double width, double height):
-max_depth(depth), vtree(layer_start(depth)), scene_width(width), scene_height(height) {}
+max_depth(depth), scene_width(width), scene_height(height) {}
 
 grid_loose_quadtree::~grid_loose_quadtree() {}
 
@@ -38,78 +38,73 @@ basics::aabb grid_loose_quadtree::normalize(const basics::aabb& box) {
     return { box.left / scene_width, box.right / scene_width, box.top / scene_height, box.bottom / scene_height };
 }
 
-grid_loose_quadtree::hitbox_set& grid_loose_quadtree::box_pos(const basics::aabb& box) {
-    auto depth = std::min(box_depth(box), max_depth);
-    double bcx = (box.left + box.right) / 2;
-    double bcy = (box.top + box.bottom) / 2;
+size_t grid_loose_quadtree::max_idx() { return layer_start(max_depth); }
+
+auto grid_loose_quadtree::box_pos(const basics::aabb& box) -> std::tuple<size_t, size_t, unsigned char> {
+    auto nbox = normalize(box);
+    auto depth = std::min(box_depth(nbox), max_depth);
+    double bcx = (nbox.left + nbox.right) / 2;
+    double bcy = (nbox.top + nbox.bottom) / 2;
     ssize_t ix = pos_idx(bcx, depth), iy = pos_idx(bcy, depth);
     ssize_t max_idx = (ssize_t(1) << depth) - 1;
-    auto clamp = [&](ssize_t v) -> ssize_t {
+    auto clamp = [&](ssize_t v) -> size_t {
         if (v < 0) return 0;
         if (v > max_idx) return max_idx;
         return v;
     };
-    return vtree[combine_idx(clamp(ix), clamp(iy), depth)];
+    return { clamp(ix), clamp(iy), depth };
 }
 
-auto grid_loose_quadtree::add_box(void* parent, const basics::aabb& box, const basics::vec2& offset) -> handle_type {
-    auto hbox = box_data.emplace(box_data.end(), parent, box, offset);
-    box_pos(normalize(hbox->abs_box())).emplace(hbox);
-    return hbox;
+size_t grid_loose_quadtree::box_idx(const basics::aabb& box) {
+    auto [x, y, d] = box_pos(box);
+    return combine_idx(x, y, d);
 }
 
-void grid_loose_quadtree::del_box(handle_type hbox) {
-    box_pos(normalize(hbox->abs_box())).erase(hbox);
-    box_data.erase(hbox);
+void grid_loose_quadtree::add_box(hitbox* hbox) {
+    vtree.insert({box_idx(hbox->abs_box()), hbox});
 }
 
-void grid_loose_quadtree::move_box(handle_type hbox, const basics::vec2& v) {
-    auto abs_box = hbox->abs_box();
-    auto& old_set = box_pos(normalize(abs_box));
-    auto& new_set = box_pos(normalize(abs_box.offset(v)));
-    if (&old_set != &new_set) {
-        old_set.erase(hbox);
-        new_set.emplace(hbox);
-    }
+void grid_loose_quadtree::del_box(hitbox* hbox) {
+    vtree.right.erase(hbox);
+}
+
+void grid_loose_quadtree::move_box(hitbox* hbox, const basics::vec2& v) {
     hbox->offset += v;
+    auto new_idx = box_idx(hbox->abs_box());
+    auto it = vtree.right.find(hbox);
+    if (it->second != new_idx) { vtree.right.replace_data(it, new_idx); }
 }
+
+void grid_loose_quadtree::reset() { vtree.clear(); }
 
 void grid_loose_quadtree::retree_boxes() {
-    for (auto&& bset : vtree) { bset.clear(); }
-    for (auto hbox = box_data.begin(); hbox != box_data.end(); ++hbox) {
-        box_pos(normalize(hbox->box)).emplace(hbox);
-    }
+    std::vector<hitbox*> ptrs;
+    ptrs.reserve(vtree.size());
+    for (auto&& [_, ptr] : vtree) { ptrs.push_back(ptr); }
+    vtree.clear();
+    for (auto&& ptr : ptrs) { add_box(ptr); }
 }
 
-void grid_loose_quadtree::reset() {
-    for (auto&& bset : vtree) { bset.clear(); }
-    box_data.clear();
-}
-
-#define CHECK_COLLISION_AT_TREE(idx) \
-    for (auto&& may_coll : vtree[idx]) { \
-        if (hbox != may_coll && abs_box.have_overlap(may_coll->abs_box())) { \
-            co_yield may_coll; \
-        } \
-    }
-
-auto grid_loose_quadtree::may_collide(handle_type hbox) -> coutils::generator<handle_type> {
+auto grid_loose_quadtree::may_collide(hitbox* hbox) -> coutils::generator<hitbox*> {
     auto abs_box = hbox->abs_box();
-    auto norm_box = normalize(abs_box);
-    auto depth = std::min(box_depth(norm_box), max_depth);
-    ssize_t ix, iy;
-    if (depth == 0) {
-        CHECK_COLLISION_AT_TREE(0)
-        co_return;
-    } else if (depth == 1) {
-        for (size_t i = 0; i < 5; ++i) {
-            CHECK_COLLISION_AT_TREE(i)
+
+    auto check_at_idx = [&](size_t idx) -> coutils::generator<hitbox*> {
+        for (auto may_coll_it = vtree.left.find(idx); may_coll_it != vtree.left.end() && may_coll_it->first == idx; ++may_coll_it) {
+            auto& may_coll = may_coll_it->second;
+            if (hbox != may_coll && abs_box.have_overlap(may_coll->abs_box())) {
+                co_yield may_coll;
+            }
+        }
+    };
+
+    auto [ix, iy, depth] = box_pos(abs_box);
+
+    if (depth <= 1) {
+        auto depth_max_idx = layer_start(depth + 1);
+        for (size_t i = 0; i < depth_max_idx; ++i) {
+            for (auto&& res : check_at_idx(i)) { co_yield res; }
         }
         co_return;
-    } else {
-        double bcx = (norm_box.left + norm_box.right) / 2;
-        double bcy = (norm_box.top + norm_box.bottom) / 2;
-        ix = pos_idx(bcx, depth); iy = pos_idx(bcy, depth);
     }
 
     static constexpr std::pair<ssize_t, ssize_t> search_offsets[] = {
@@ -119,7 +114,7 @@ auto grid_loose_quadtree::may_collide(handle_type hbox) -> coutils::generator<ha
     };
 
     // 比较同层网格的周围9个及其对应上层
-    bitvec visited(vtree.size(), false);
+    bitvec visited(max_idx(), false);
     ssize_t max_idx = (ssize_t(1) << depth) - 1;
     for (auto&& [dix, diy] : search_offsets) {
         auto rix = ix + dix, riy = iy + diy;
@@ -128,7 +123,7 @@ auto grid_loose_quadtree::may_collide(handle_type hbox) -> coutils::generator<ha
             size_t idx = combine_idx(rix >> i, riy >> i, depth - i);
             if (visited[idx]) { continue; }
             visited[idx] = true;
-            CHECK_COLLISION_AT_TREE(idx)
+            for (auto&& res : check_at_idx(idx)) { co_yield res; }
         }
     }
 }
