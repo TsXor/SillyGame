@@ -45,7 +45,6 @@ public:
 protected:
     grid_loose_quadtree boxtree;
     intr::list<entity_node_t, intr::constant_time_size<false>> entities;
-    std::unordered_set<entity_t*> colldet_source;
 
 public:
     simulator(double width, double height);
@@ -62,10 +61,9 @@ public:
     void teleport_entity_offset(entity_t* entity, basics::vec2 offset);
     void teleport_entity_center(entity_t* entity, basics::vec2 center);
     
-    auto colldet_from(entity_t* entity) -> coutils::generator<std::pair<entity_t*, basics::vec2>>;
-    bool add_colldet_source(entity_t* entity) { return colldet_source.emplace(entity).second; }
-    bool del_colldet_source(entity_t* entity) { return colldet_source.erase(entity); }
-    auto colldet_from_sources() -> coutils::generator<std::tuple<entity_t*, entity_t*, basics::vec2>>;
+    using coll_info = std::tuple<entity_t*, entity_t*, basics::vec2>;
+    auto colldet() -> coutils::generator<coll_info>;
+    auto colldet_and_react() -> coutils::generator<coll_info>;
 
     void on_tick(double dt);
 };

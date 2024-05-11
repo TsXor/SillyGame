@@ -37,17 +37,17 @@ public:
     };
 
 protected:
-    unsigned char max_depth;
+    uint8_t max_depth;
     bimap<unordered_multiset_of<size_t>, unordered_set_of<hitbox*>> vtree;
     double scene_width, scene_height;
 
     basics::aabb normalize(const basics::aabb& box);
-    auto box_pos(const basics::aabb& box) -> std::tuple<size_t, size_t, unsigned char>;
+    auto box_pos(const basics::aabb& box) -> std::tuple<size_t, size_t, uint8_t>;
     size_t box_idx(const basics::aabb& box);
     size_t max_idx();
 
 public:
-    grid_loose_quadtree(unsigned char depth, double width, double height);
+    grid_loose_quadtree(uint8_t depth, double width, double height);
     ~grid_loose_quadtree();
 
     // 获取场景大小 
@@ -73,7 +73,8 @@ public:
     // 重新建树
     void retree_boxes();
     // 枚举相交的aabb
-    auto may_collide(hitbox* hbox) -> coutils::generator<hitbox*>;
+    auto upsearch(hitbox* hbox) -> coutils::generator<hitbox*>;
+    auto colldet() -> coutils::generator<std::pair<hitbox*, hitbox*>>;
 };
 
 } // namespace naive_engine
