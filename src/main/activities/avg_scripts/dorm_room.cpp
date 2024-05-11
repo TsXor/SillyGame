@@ -7,16 +7,38 @@ using namespace acts::avg_scripts;
 using namespace naive_engine;
 using namespace silly_framework;
 
-const std::unordered_map<std::string, basics::vec2> spawn_points = {
-    {"", {256, 512}},
-    {"front_door", {256, 1008}},
-    {"back_door", {256, 144}},
-};
+static void go_out(acts::avg_scene& self, int room_number) {
+    auto floor_arg = std::to_string(room_number / 100);
+    auto jcl = [&](const basics::vec2& pos) { self.next<acts::avg_scene>("dorm_corridor_left", pos, floor_arg); };
+    auto jcm = [&](const basics::vec2& pos) { self.next<acts::avg_scene>("dorm_corridor_middle", pos, floor_arg); };
+    auto jcr = [&](const basics::vec2& pos) { self.next<acts::avg_scene>("dorm_corridor_right", pos, floor_arg); };
+    switch (room_number % 100) {
+        case  1: jcr(points.dorm_corridor_door_01); break;
+        case  2: jcr(points.dorm_corridor_door_02); break;
+        case  3: jcr(points.dorm_corridor_door_03); break;
+        case  4: jcr(points.dorm_corridor_door_04); break;
+        case  5: jcr(points.dorm_corridor_door_05); break;
+        case  6: jcr(points.dorm_corridor_door_06); break;
+        case  7: jcm(points.dorm_corridor_door_07); break;
+        case  8: jcm(points.dorm_corridor_door_08); break;
+        case  9: jcl(points.dorm_corridor_door_09); break;
+        case 10: jcl(points.dorm_corridor_door_10); break;
+        case 11: jcl(points.dorm_corridor_door_11); break;
+        case 32: jcl(points.dorm_corridor_door_32); break;
+        case 33: jcr(points.dorm_corridor_door_33); break;
+        case 34: jcr(points.dorm_corridor_door_34); break;
+        case 35: jcr(points.dorm_corridor_door_35); break;
+        case 36: jcr(points.dorm_corridor_door_36); break;
+        case 37: jcr(points.dorm_corridor_door_37); break;
+        case 38: jcr(points.dorm_corridor_door_38); break;
+    }
+}
 
-void acts::avg_scripts::dorm_room(avg_scene& self, const std::string& arg) {
+void acts::avg_scripts::dorm_room(avg_scene& self, const std::optional<eng::basics::vec2>& spawn, const std::string& arg) {
     coutils::sync::unleash_lambda([&]() -> coutils::async_fn<void> {
+        int room_number = arg.empty() ? 508 : std::stoi(arg);
         // 出生点
-        basics::vec2 spawn_pos = sf::utils::value_or(spawn_points, arg, spawn_points.at(""));
+        basics::vec2 spawn_pos = spawn.value_or(points.dorm_room_default);
         simulator::entity_node_t person(basics::aabb(-16, 16, -12, 12), spawn_pos);
         self.simu.emplace(512, 1056);
         utils::add_main_char(self, person);
@@ -35,15 +57,14 @@ void acts::avg_scripts::dorm_room(avg_scene& self, const std::string& arg) {
         };
         utils::add_map_obstacles(self, obstacles);
         
-        simulator::entity_node_t triggers[] = {
-            {basics::aabb{224, 288, 1024, 1056}}, // 0, 前门
-            {basics::aabb{224, 288, 96, 128}} // 1, 后门
-        };
-        utils::add_trigger_boxes(self, triggers);
+        simulator::entity_node_t
+            front_door = {basics::aabb{224, 288, 1024, 1056}},
+            back_door = {basics::aabb{224, 288, 96, 128}};
+        utils::add_trigger_boxes(self, front_door, back_door);
 
         utils::coll_event_table colls {
-            { {person.ptr(), triggers[0].ptr()}, [&](){ self.next<acts::avg_scene>("dorm_corridor_left", "door_unbox"); } },
-            { {person.ptr(), triggers[1].ptr()}, [&](){ self.next<acts::avg_scene>("dorm_balcony", "door"); } }
+            { {person.ptr(), front_door.ptr()}, [&](){ go_out(self, room_number); } },
+            { {person.ptr(), back_door.ptr()}, [&](){ self.next<acts::avg_scene>("dorm_balcony", points.dorm_balcony_door, std::to_string(room_number)); } }
         };
 
         while (true) {

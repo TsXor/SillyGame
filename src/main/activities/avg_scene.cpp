@@ -13,7 +13,9 @@ constexpr struct {
 avg_scene::string_map<acts::avg_scene::script_t> avg_scene::scene_scripts = {
     {"dorm_room", avg_scripts::dorm_room},
     {"dorm_balcony", avg_scripts::dorm_balcony},
-    {"dorm_corridor_left", avg_scripts::dorm_corridor_left}
+    {"dorm_corridor_left", avg_scripts::dorm_corridor_left},
+    {"dorm_corridor_middle", avg_scripts::dorm_corridor_middle},
+    {"dorm_corridor_right", avg_scripts::dorm_corridor_right}
 };
 
 avg_scene::entity_comp_t avg_scene::default_sprites_sorter() {
@@ -22,10 +24,10 @@ avg_scene::entity_comp_t avg_scene::default_sprites_sorter() {
     };
 }
 
-avg_scene::avg_scene(sf::game_window& window, const std::string& name, const std::string& arg):
+avg_scene::avg_scene(sf::game_window& window, const std::string& name, const std::optional<eng::basics::vec2>& spawn, const std::string& arg):
 base_activity(window) {
     parent.renman.vs_size(avg_vs_size.width, avg_vs_size.height);
-    if (scene_scripts.contains(name)) { scene_scripts[name](*this, arg); }
+    if (scene_scripts.contains(name)) { scene_scripts[name](*this, spawn, arg); }
 }
 
 avg_scene::~avg_scene() {}
@@ -39,7 +41,7 @@ void avg_scene::on_tick(double this_time, double last_time) {
     cohost.on_tick(this_time, last_time);
     if (simu) {
         simu->on_tick(this_time - last_time);
-        for (auto&& [ent1, ent2, mtv] : simu->colldet_from_sources()) {
+        for (auto&& [ent1, ent2, mtv] : simu->colldet_and_react()) {
             cohost.on_collision(ent1, ent2, mtv);
         }
     }

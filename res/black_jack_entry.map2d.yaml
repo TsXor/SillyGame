@@ -1,0 +1,5 @@
+file: "black_jack_entry.png"
+name: "black_jack_entry"
+blocks:
+    -   uv: [0, 256, 0, 128]
+        at: [0, 0]

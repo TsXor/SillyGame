@@ -15,23 +15,42 @@ using coll_event_table = sf::utils::unordered_upair_map<eng::simulator::entity_t
 
 static inline void add_main_char(avg_scene& self, eng::simulator::entity_node_t& person) {
     self.simu->add_entity(person);
-    self.simu->add_colldet_source(person.ptr());
     self.keyboard_controlled = {person.ptr(), 1.0};
     self.camera_attached = person.ptr();
 }
 
+static inline auto add_map_obstacle(avg_scene& self, eng::simulator::entity_node_t& obstacle) {
+    obstacle.data.flags = { .repulsive = true, .fixed = true  };
+    self.simu->add_entity(obstacle);
+}
+
+static inline auto add_map_obstacles(avg_scene& self) {}
+
+template <typename... ArgTs>
+static inline auto add_map_obstacles(avg_scene& self, eng::simulator::entity_node_t& trigger, ArgTs&&... args) {
+    add_map_obstacle(self, trigger);
+    add_map_obstacles(self, std::forward<ArgTs>(args)...);
+}
+
 static inline auto add_map_obstacles(avg_scene& self, const std::span<eng::simulator::entity_node_t>& obstacles) {
-    for (auto&& obstacle : obstacles) {
-        obstacle.data.flags = { .repulsive = true, .fixed = true  };
-        self.simu->add_entity(obstacle);
-    }
+    for (auto&& obstacle : obstacles) { add_map_obstacle(self, obstacle); }
+}
+
+static inline auto add_trigger_box(avg_scene& self, eng::simulator::entity_node_t& trigger) {
+    trigger.data.flags = { .repulsive = false, .fixed = true  };
+    self.simu->add_entity(trigger);
+}
+
+static inline auto add_trigger_boxes(avg_scene& self) {}
+
+template <typename... ArgTs>
+static inline auto add_trigger_boxes(avg_scene& self, eng::simulator::entity_node_t& trigger, ArgTs&&... args) {
+    add_trigger_box(self, trigger);
+    add_trigger_boxes(self, std::forward<ArgTs>(args)...);
 }
 
 static inline auto add_trigger_boxes(avg_scene& self, const std::span<eng::simulator::entity_node_t>& triggers) {
-    for (auto&& trigger : triggers) {
-        trigger.data.flags = { .repulsive = false, .fixed = true  };
-        self.simu->add_entity(trigger);
-    }
+    for (auto&& trigger : triggers) { add_trigger_box(self, trigger); }
 }
 
 static inline bool check_coll_events(avg_scene& self, const coll_event_table& coll_table, const std::any& evt_data) {

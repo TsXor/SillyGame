@@ -6,6 +6,14 @@ using namespace silly_framework;
 
 using map_blocks = std::vector<map2d::block_pos>;
 
+const map2d& maps::black_jack_entry() {
+    static const map2d map("black_jack_entry.png",
+        map_blocks{
+            {{0, 256, 0, 128}, {0, 0}}
+        }
+    );
+    return map;
+}
 const map2d& maps::dorm_balcony() {
     static const map2d map("dorm_balcony.png",
         map_blocks{
@@ -22,10 +30,34 @@ const map2d& maps::dorm_corridor_left() {
     );
     return map;
 }
+const map2d& maps::dorm_corridor_middle() {
+    static const map2d map("dorm_corridor_middle.png",
+        map_blocks{
+            {{0, 256, 0, 128}, {0, 0}}
+        }
+    );
+    return map;
+}
+const map2d& maps::dorm_corridor_right() {
+    static const map2d map("dorm_corridor_right.png",
+        map_blocks{
+            {{0, 128, 0, 480}, {0, 0}}
+        }
+    );
+    return map;
+}
 const map2d& maps::dorm_room() {
     static const map2d map("dorm_room.png",
         map_blocks{
             {{0, 128, 0, 264}, {0, 0}}
+        }
+    );
+    return map;
+}
+const map2d& maps::genshin_pursuit_entry() {
+    static const map2d map("genshin_pursuit_entry.png",
+        map_blocks{
+            {{0, 128, 0, 256}, {0, 0}}
         }
     );
     return map;

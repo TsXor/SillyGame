@@ -7,15 +7,11 @@ using namespace acts::avg_scripts;
 using namespace naive_engine;
 using namespace silly_framework;
 
-const std::unordered_map<std::string, basics::vec2> spawn_points = {
-    {"", {256, 160}},
-    {"door", {256, 304}},
-};
-
-void acts::avg_scripts::dorm_balcony(avg_scene& self, const std::string& arg) {
+void acts::avg_scripts::dorm_balcony(avg_scene& self, const std::optional<eng::basics::vec2>& spawn, const std::string& arg) {
     coutils::sync::unleash_lambda([&]() -> coutils::async_fn<void> {
+        int room_number = std::stoi(arg);
         // 出生点
-        basics::vec2 spawn_pos = sf::utils::value_or(spawn_points, arg, spawn_points.at(""));
+        basics::vec2 spawn_pos = spawn.value_or(points.dorm_balcony_default);
         simulator::entity_node_t person(basics::aabb(-16, 16, -12, 12), spawn_pos);
         self.simu.emplace(512, 352);
         utils::add_main_char(self, person);
@@ -33,13 +29,11 @@ void acts::avg_scripts::dorm_balcony(avg_scene& self, const std::string& arg) {
         };
         utils::add_map_obstacles(self, obstacles);
         
-        simulator::entity_node_t triggers[] = {
-            {basics::aabb{224, 288, 320, 352}} // 0, 门
-        };
-        utils::add_trigger_boxes(self, triggers);
+        simulator::entity_node_t door = {basics::aabb{224, 288, 320, 352}};
+        utils::add_trigger_boxes(self, door);
 
         utils::coll_event_table colls {
-            { {person.ptr(), triggers[0].ptr()}, [&](){ self.next<acts::avg_scene>("dorm_room", "back_door"); } }
+            { {person.ptr(), door.ptr()}, [&](){ self.next<acts::avg_scene>("dorm_room", points.dorm_room_back_door, std::to_string(room_number)); } }
         };
 
         while (true) {

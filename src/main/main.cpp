@@ -22,8 +22,8 @@ int main(int argc, char** argv) {
     auto logfile_path = root_path / (project_name + ".log");
     sf::logger::make(project_name, logfile_path.string());
     // 启动主窗口
-    sf::game_window(project_name.c_str(), 60, std::chrono::milliseconds(5))
-        .run<acts::avg_scene>("dorm_room", "");
+    sf::game_window(project_name.c_str(), 60, std::chrono::milliseconds(10))
+        .run<acts::avg_scene>("dorm_room");
     // 再见...
     return 0;
 }

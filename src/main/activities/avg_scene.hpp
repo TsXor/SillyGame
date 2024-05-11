@@ -34,7 +34,7 @@ class avg_scene : public sf::base_activity {
 public:
     template <typename T>
     using string_map = std::unordered_map<std::string, T>;
-    using script_t = void(*)(avg_scene&, const std::string&);
+    using script_t = void(*)(avg_scene&, const std::optional<eng::basics::vec2>&, const std::string&);
     using simu_t = eng::simulator;
     using entity_t = simu_t::entity_t;
     using entity_comp_t = std::function<bool(const entity_t&, const entity_t&)>;
@@ -78,7 +78,11 @@ public:
     std::any script_data;
 
 
-    avg_scene(sf::game_window& window, const std::string& name, const std::string& arg);
+    avg_scene(
+        sf::game_window& window, const std::string& name,
+        const std::optional<eng::basics::vec2>& spawn = std::nullopt,
+        const std::string& arg = ""
+    );
     ~avg_scene();
     
     void render() override;

@@ -1,0 +1,5 @@
+file: "genshin_pursuit_entry.png"
+name: "genshin_pursuit_entry"
+blocks:
+    -   uv: [0, 128, 0, 256]
+        at: [0, 0]
