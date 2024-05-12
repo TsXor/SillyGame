@@ -8,6 +8,7 @@
 #include <type_traits>
 #include "engine/box_quadtree.hpp"
 #include <boost/intrusive/list.hpp>
+#include <silly_framework/utilities/coro_host.hpp>
 
 namespace naive_engine {
 
@@ -66,6 +67,21 @@ public:
     auto colldet_and_react() -> coutils::generator<coll_info>;
 
     void on_tick(double dt);
+};
+
+class simu_coro_host : public silly_framework::coro_host {
+    using entity_t = simulator::entity_t;
+public:
+    enum avg_events {
+        EVT_COLLISION = EVT_BASIC_MAX
+    };
+    struct evt_collision {
+        static constexpr size_t code = EVT_COLLISION;
+        using return_type = std::tuple<entity_t*, entity_t*, basics::vec2>;
+    };
+    void on_collision(entity_t* ent1, entity_t* ent2, basics::vec2 mtv) {
+        process_all_of<evt_collision>(ent1, ent2, mtv);
+    }
 };
 
 } // namespace naive_engine

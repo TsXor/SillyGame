@@ -15,21 +15,6 @@ namespace acts {
 namespace eng = naive_engine;
 namespace sf = silly_framework;
 
-class avg_coro_host : public sf::coro_host {
-    using entity_t = eng::simulator::entity_t;
-public:
-    enum avg_events {
-        EVT_COLLISION = EVT_BASIC_MAX
-    };
-    struct evt_collision {
-        static constexpr size_t code = EVT_COLLISION;
-        using return_type = std::tuple<entity_t*, entity_t*, eng::basics::vec2>;
-    };
-    void on_collision(entity_t* ent1, entity_t* ent2, eng::basics::vec2 mtv) {
-        process_all_of<evt_collision>(ent1, ent2, mtv);
-    }
-};
-
 class avg_scene : public sf::base_activity {
 public:
     template <typename T>
@@ -66,7 +51,7 @@ public:
     static string_map<script_t> scene_scripts;
     static entity_comp_t default_sprites_sorter();
     
-    avg_coro_host cohost;
+    eng::simu_coro_host cohost;
     std::optional<simu_t> simu;
     std::pair<entity_t*, double> keyboard_controlled = {nullptr, 0.0};
     sf::glut::coord camera_pos = {0, 0};

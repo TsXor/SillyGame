@@ -54,7 +54,7 @@ static inline auto add_trigger_boxes(avg_scene& self, const std::span<eng::simul
 }
 
 static inline bool check_coll_events(avg_scene& self, const coll_event_table& coll_table, const std::any& evt_data) {
-    auto&& [coll_a, coll_b, mtv] = avg_coro_host::extract_data<avg_coro_host::evt_collision>(evt_data);
+    auto&& [coll_a, coll_b, mtv] = eng::simu_coro_host::extract_data<eng::simu_coro_host::evt_collision>(evt_data);
     auto coll_it = coll_table.find(std::make_pair(coll_a, coll_b));
     if (coll_it != coll_table.end()) { coll_it->second(); return true; }
     return false;

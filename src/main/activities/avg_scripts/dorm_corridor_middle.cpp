@@ -48,7 +48,7 @@ void acts::avg_scripts::dorm_corridor_middle(avg_scene& self, const std::optiona
         };
 
         while (true) {
-            auto [_, evt_data] = co_await self.cohost.wait_event({avg_coro_host::EVT_COLLISION});
+            auto [_, evt_data] = co_await self.cohost.wait_event({simu_coro_host::EVT_COLLISION});
             utils::check_coll_events(self, colls, evt_data);
         }
     });
