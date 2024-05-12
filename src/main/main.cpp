@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     sf::logger::make(project_name, logfile_path.string());
     // 启动主窗口
     sf::game_window(project_name.c_str(), 60, std::chrono::milliseconds(10))
-        .run<acts::avg_scene>("dorm_room");
+        .run<acts::avg_scene>("dorm_room", std::nullopt, "311");
     // 再见...
     return 0;
 }

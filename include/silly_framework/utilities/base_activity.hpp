@@ -16,6 +16,8 @@ struct base_activity : public iface_activity {
 
     template <typename SceneT, typename... ArgTs>
     void call(ArgTs&&... args) {
+        parent.inpman.clear_state();
+        on_key_signal(); on_key_change();
         parent.actman.post_emplace<SceneT>(parent, std::forward<ArgTs>(args)...);
     }
 

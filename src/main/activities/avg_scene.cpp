@@ -19,6 +19,7 @@ avg_scene::string_map<acts::avg_scene::script_t> avg_scene::scene_scripts = {
     {"dorm_stairs", avg_scripts::dorm_stairs},
     {"dorm_stairs_middle", avg_scripts::dorm_stairs_middle},
     {"dorm_stairs_bottom", avg_scripts::dorm_stairs_bottom},
+    {"black_jack_entry", avg_scripts::black_jack_entry},
 };
 
 avg_scene::entity_comp_t avg_scene::default_sprites_sorter() {

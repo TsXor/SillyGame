@@ -36,7 +36,7 @@ static void go_out(acts::avg_scene& self, int room_number) {
 
 void acts::avg_scripts::dorm_room(avg_scene& self, const std::optional<eng::basics::vec2>& spawn, const std::string& arg) {
     coutils::sync::unleash_lambda([&]() -> coutils::async_fn<void> {
-        int room_number = arg.empty() ? 508 : std::stoi(arg);
+        int room_number = std::stoi(arg);
         // 出生点
         basics::vec2 spawn_pos = spawn.value_or(points.dorm_room_default);
         simulator::entity_node_t person(basics::aabb(-16, 16, -12, 12), spawn_pos);
@@ -59,13 +59,22 @@ void acts::avg_scripts::dorm_room(avg_scene& self, const std::optional<eng::basi
         
         simulator::entity_node_t
             front_door = {basics::aabb{224, 288, 1024, 1056}},
-            back_door = {basics::aabb{224, 288, 96, 128}};
-        utils::add_trigger_boxes(self, front_door, back_door);
+            back_door = {basics::aabb{224, 288, 96, 128}},
+            table_1 = {basics::aabb{128, 144, 352, 400}},
+            table_2 = {basics::aabb{368, 384, 352, 400}},
+            table_3 = {basics::aabb{128, 144, 768, 816}},
+            table_4 = {basics::aabb{368, 384, 768, 816}};
+        utils::add_trigger_boxes(self, front_door, back_door, table_1, table_2, table_3, table_4);
 
         utils::coll_event_table colls {
             { {person.ptr(), front_door.ptr()}, [&](){ go_out(self, room_number); } },
             { {person.ptr(), back_door.ptr()}, [&](){ self.next<acts::avg_scene>("dorm_balcony", points.dorm_balcony_door, std::to_string(room_number)); } }
         };
+
+        if (room_number == 311) {
+            colls[{person.ptr(), table_2.ptr()}] = [&](){ self.next<acts::avg_scene>("black_jack_entry", points.black_jack_entry_left); };
+            colls[{person.ptr(), table_3.ptr()}] = [&](){ self.next<acts::avg_scene>("dorm_room", std::nullopt, "508"); };
+        }
 
         while (true) {
             auto [_, evt_data] = co_await self.cohost.wait_event({avg_coro_host::EVT_COLLISION});

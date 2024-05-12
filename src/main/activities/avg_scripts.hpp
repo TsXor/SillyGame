@@ -54,6 +54,10 @@ static inline constexpr struct {
 
     eng::basics::vec2 dorm_stairs_bottom_default = {160, 384};
     eng::basics::vec2 dorm_stairs_bottom_up = {160, 556};
+
+    eng::basics::vec2 black_jack_entry_default = {512, 352};
+    eng::basics::vec2 black_jack_entry_left = {36, 352};
+    eng::basics::vec2 black_jack_entry_right = {988, 352};
 } points;
 
 #define AVG_SCRIPT_ARGS avg_scene& self, const std::optional<eng::basics::vec2>& spawn, const std::string& arg
@@ -66,6 +70,7 @@ void dorm_corridor_right(AVG_SCRIPT_ARGS);
 void dorm_stairs(AVG_SCRIPT_ARGS);
 void dorm_stairs_middle(AVG_SCRIPT_ARGS);
 void dorm_stairs_bottom(AVG_SCRIPT_ARGS);
+void black_jack_entry(AVG_SCRIPT_ARGS);
 
 #undef AVG_SCRIPT_ARGS
 

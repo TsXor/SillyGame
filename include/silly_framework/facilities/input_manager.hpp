@@ -38,6 +38,8 @@ public:
     int key_code(vkey::code vkc) { return key_map[static_cast<size_t>(vkc)]; }
     bool pressed(int rkc) { return key_states[rkc]; }
     bool pressed(vkey::code vkc) { return key_states[key_code(vkc)]; }
+
+    void clear_state() { for (auto&& state : key_states) { state = false; } }
 };
 
 } // namespace silly_framework
