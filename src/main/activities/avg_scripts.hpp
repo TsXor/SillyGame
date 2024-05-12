@@ -24,6 +24,7 @@ static inline constexpr struct {
     eng::basics::vec2 dorm_corridor_middle_default = {512, 352};
     eng::basics::vec2 dorm_corridor_middle_joint_left = {36, 352};
     eng::basics::vec2 dorm_corridor_middle_joint_right = {988, 352};
+    eng::basics::vec2 dorm_corridor_middle_door = {704, 428};
     eng::basics::vec2 dorm_corridor_door_08 = {304, 276};
     eng::basics::vec2 dorm_corridor_door_07 = {720, 276};
 
@@ -41,6 +42,18 @@ static inline constexpr struct {
     eng::basics::vec2 dorm_corridor_door_35 = {364, 1232};
     eng::basics::vec2 dorm_corridor_door_34 = {364, 1520};
     eng::basics::vec2 dorm_corridor_door_33 = {364, 1808};
+
+    eng::basics::vec2 dorm_stairs_default = {320, 192};
+    eng::basics::vec2 dorm_stairs_door = {320, 148};
+    eng::basics::vec2 dorm_stairs_down = {216, 236};
+    eng::basics::vec2 dorm_stairs_up = {424, 236};
+
+    eng::basics::vec2 dorm_stairs_middle_default = {320, 536};
+    eng::basics::vec2 dorm_stairs_middle_down = {216, 580};
+    eng::basics::vec2 dorm_stairs_middle_up = {424, 580};
+
+    eng::basics::vec2 dorm_stairs_bottom_default = {160, 384};
+    eng::basics::vec2 dorm_stairs_bottom_up = {160, 556};
 } points;
 
 #define AVG_SCRIPT_ARGS avg_scene& self, const std::optional<eng::basics::vec2>& spawn, const std::string& arg
@@ -50,6 +63,9 @@ void dorm_balcony(AVG_SCRIPT_ARGS);
 void dorm_corridor_left(AVG_SCRIPT_ARGS);
 void dorm_corridor_middle(AVG_SCRIPT_ARGS);
 void dorm_corridor_right(AVG_SCRIPT_ARGS);
+void dorm_stairs(AVG_SCRIPT_ARGS);
+void dorm_stairs_middle(AVG_SCRIPT_ARGS);
+void dorm_stairs_bottom(AVG_SCRIPT_ARGS);
 
 #undef AVG_SCRIPT_ARGS
 

@@ -1,0 +1,5 @@
+file: "dorm_stairs_bottom.png"
+name: "dorm_stairs_bottom"
+blocks:
+    -   uv: [0, 96, 0, 160]
+        at: [0, 0]

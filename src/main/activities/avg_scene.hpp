@@ -56,7 +56,7 @@ public:
         sf::glut::coord coord_offset = {0, 0};
         
         void render(sf::game_window& wnd, sf::glut::coord camera_pos) {
-            auto center = camera_pos + coord_offset;
+            auto center = camera_pos - coord_offset;
             map->render(wnd, center.x, center.y, scalev);
         }
     };

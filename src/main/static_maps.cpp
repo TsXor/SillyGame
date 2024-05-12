@@ -54,6 +54,38 @@ const map2d& maps::dorm_room() {
     );
     return map;
 }
+const map2d& maps::dorm_stairs() {
+    static const map2d map("dorm_stairs.png",
+        map_blocks{
+            {{0, 160, 0, 96}, {0, 0}}
+        }
+    );
+    return map;
+}
+const map2d& maps::dorm_stairs_bottom() {
+    static const map2d map("dorm_stairs_bottom.png",
+        map_blocks{
+            {{0, 96, 0, 160}, {0, 0}}
+        }
+    );
+    return map;
+}
+const map2d& maps::dorm_stairs_middle() {
+    static const map2d map("dorm_stairs_middle.png",
+        map_blocks{
+            {{0, 160, 0, 160}, {0, 0}}
+        }
+    );
+    return map;
+}
+const map2d& maps::dorm_stairs_top() {
+    static const map2d map("dorm_stairs_top.png",
+        map_blocks{
+            {{0, 160, 0, 96}, {0, 0}}
+        }
+    );
+    return map;
+}
 const map2d& maps::genshin_pursuit_entry() {
     static const map2d map("genshin_pursuit_entry.png",
         map_blocks{

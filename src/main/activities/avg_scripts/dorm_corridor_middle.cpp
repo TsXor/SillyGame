@@ -42,6 +42,7 @@ void acts::avg_scripts::dorm_corridor_middle(avg_scene& self, const std::optiona
         utils::coll_event_table colls {
             { {person.ptr(), joint_left.ptr()}, [&](){ self.next<acts::avg_scene>("dorm_corridor_left", points.dorm_corridor_left_joint, std::to_string(floor_number)); } },
             { {person.ptr(), joint_right.ptr()}, [&](){ self.next<acts::avg_scene>("dorm_corridor_right", points.dorm_corridor_right_joint, std::to_string(floor_number)); } },
+            { {person.ptr(), door_stairs.ptr()}, [&](){ self.next<acts::avg_scene>("dorm_stairs", points.dorm_stairs_door, std::to_string(floor_number)); } },
             { {person.ptr(), door_07.ptr()}, [&](){ jroom( 7); } },
             { {person.ptr(), door_08.ptr()}, [&](){ jroom( 8); } }
         };

@@ -15,7 +15,10 @@ avg_scene::string_map<acts::avg_scene::script_t> avg_scene::scene_scripts = {
     {"dorm_balcony", avg_scripts::dorm_balcony},
     {"dorm_corridor_left", avg_scripts::dorm_corridor_left},
     {"dorm_corridor_middle", avg_scripts::dorm_corridor_middle},
-    {"dorm_corridor_right", avg_scripts::dorm_corridor_right}
+    {"dorm_corridor_right", avg_scripts::dorm_corridor_right},
+    {"dorm_stairs", avg_scripts::dorm_stairs},
+    {"dorm_stairs_middle", avg_scripts::dorm_stairs_middle},
+    {"dorm_stairs_bottom", avg_scripts::dorm_stairs_bottom},
 };
 
 avg_scene::entity_comp_t avg_scene::default_sprites_sorter() {
