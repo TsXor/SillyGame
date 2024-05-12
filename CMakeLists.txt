@@ -68,3 +68,6 @@ compiler_static_lib(SillyGame)
 target_include_directories(SillyGame PRIVATE ${SILLY_GAME_SOURCE_ROOT})
 target_link_libraries(SillyGame PRIVATE SillyFramework)
 make_windows_compiler_happy(SillyGame)
+add_custom_command(TARGET SillyGame POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/res $<TARGET_FILE_DIR:SillyGame>/res)
