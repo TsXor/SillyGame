@@ -59,6 +59,7 @@ struct aabb {
             && std::min(box1.bottom, box2.bottom) > std::max(box1.top, box2.top);
     }
     bool have_overlap(const aabb& other) const { return have_overlap(*this, other); }
+    vec2 center() { return {(left + right) / 2, (top + bottom) / 2}; }
 };
 
 static inline aabb operator+(const aabb& box, const vec2& off) {

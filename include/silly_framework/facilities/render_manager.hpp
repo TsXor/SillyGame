@@ -39,6 +39,8 @@ public:
 
     // 将指定纹理经xy与uv变换后渲染
     void blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::mat4& uv);
+    // 向指定位置填充颜色
+    void fill(uint8_t r, uint8_t g, uint8_t b, glut::position pos);
 };
 
 } // namespace silly_framework

@@ -102,7 +102,9 @@ struct coro_host_base::subscriber {
 
 coro_host_base::coro_host_base() {}
 coro_host_base::~coro_host_base() {
-    for (auto&& [code, sub] : pending) { sub->caller.destroy(); }
+    for (auto&& [code, sub] : pending) {
+        if (sub->caller && sub->caller.done()) { sub->caller.destroy(); }
+    }
 }
 
 template <typename RetT, typename... ArgTs>

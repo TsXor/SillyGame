@@ -1,0 +1,8 @@
+{
+    "name": "fill",
+    "files": [
+        "use_color.frag",
+        "transform_shape_notex.vert"
+    ],
+    "inits": "default"
+}

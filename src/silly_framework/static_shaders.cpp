@@ -31,10 +31,10 @@ static inline gl::Program&& init_program(gl::Program&& prog, OpTs... ops) {
 } // namespace utils
 
 
-gl::ShaderSource& shaders::files::use_texture() {
+gl::ShaderSource& shaders::files::use_color() {
     static gl::ShaderSource source = utils::make_source(
-        "use_texture.frag"s,
-        "#version 330 core\n\nin vec2 tex_coord;\nuniform sampler2D tex;\nout vec4 frag_color;\n\nvoid main() {\n    frag_color = texture(tex, vec2(tex_coord.x, 1 - tex_coord.y));\n}\n"s
+        "use_color.frag"s,
+        "#version 330 core\n\nuniform vec4 color;\nout vec4 frag_color;\n\nvoid main() {\n    frag_color = color;\n}\n"s
     );
     return source;
 }
@@ -45,7 +45,31 @@ gl::ShaderSource& shaders::files::transform_shape() {
     );
     return source;
 }
+gl::ShaderSource& shaders::files::use_texture() {
+    static gl::ShaderSource source = utils::make_source(
+        "use_texture.frag"s,
+        "#version 330 core\n\nin vec2 tex_coord;\nuniform sampler2D tex;\nout vec4 frag_color;\n\nvoid main() {\n    frag_color = texture(tex, vec2(tex_coord.x, 1 - tex_coord.y));\n}\n"s
+    );
+    return source;
+}
+gl::ShaderSource& shaders::files::transform_shape_notex() {
+    static gl::ShaderSource source = utils::make_source(
+        "transform_shape_notex.vert"s,
+        "#version 330 core\n\nin vec4 vertex;\nuniform mat4 pos_trans;\n\nvoid main() {\n    gl_Position = pos_trans * vec4(vertex.xy, 0.0, 1.0);\n}\n"s
+    );
+    return source;
+}
 
+gl::Program& shaders::programs::fill() {
+    static gl::Program prog = utils::init_program(
+        utils::make_program(
+            gl::Shader(gl::kFragmentShader, files::use_color()), 
+            gl::Shader(gl::kVertexShader, files::transform_shape_notex())
+        ),
+        ::shaders::details::fill_init
+    );
+    return prog;
+}
 gl::Program& shaders::programs::sprite() {
     static gl::Program prog = utils::init_program(
         utils::make_program(

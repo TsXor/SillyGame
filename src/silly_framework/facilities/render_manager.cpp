@@ -60,3 +60,14 @@ void render_manager::blit(gl::Texture2D& tex, const glm::mat4& xy, const glm::ma
         gl::DrawArrays(gl::PrimType::kTriangles, 0, blit_vertices.size());
     });
 }
+
+void render_manager::fill(uint8_t r, uint8_t g, uint8_t b, glut::position pos) {
+    auto& prog = shaders::programs::fill(); gl::Use(prog);
+    gl::Uniform<glm::mat4> var_pos_trans(prog, "pos_trans");
+    gl::Uniform<glm::vec4> var_color(prog, "color");
+    var_pos_trans.set(glut::xy_trans(pos, vs_w, vs_h, glut::eye4));
+    var_color.set(glm::vec4(r, g, b, 1));
+    blit_data().with_obj_do([&](glut::vertex_obj& vert) {
+        gl::DrawArrays(gl::PrimType::kTriangles, 0, blit_vertices.size());
+    });
+}

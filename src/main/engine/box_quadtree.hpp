@@ -34,6 +34,7 @@ public:
         basics::aabb box;
         basics::vec2 offset = {0, 0};
         auto abs_box() { return box.offset(offset); }
+        auto center() { return box.center() + offset; }
     };
 
 protected:

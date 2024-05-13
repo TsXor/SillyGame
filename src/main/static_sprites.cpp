@@ -12,3 +12,19 @@ const sprite2d& sprites::container_small() {
     static const sprite2d spr("container_small.png", {0, 16, 0, 24});
     return spr;
 }
+const sprite2d& sprites::enemy_bullet() {
+    static const sprite2d spr("enemy_bullet.png", {0, 16, 0, 16});
+    return spr;
+}
+const sprite2d& sprites::enemy_plane() {
+    static const sprite2d spr("enemy_plane.png", {0, 64, 0, 64});
+    return spr;
+}
+const sprite2d& sprites::player_bullet() {
+    static const sprite2d spr("player_bullet.png", {0, 16, 0, 16});
+    return spr;
+}
+const sprite2d& sprites::player_plane() {
+    static const sprite2d spr("player_plane.png", {0, 64, 0, 64});
+    return spr;
+}

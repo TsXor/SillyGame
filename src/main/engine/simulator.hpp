@@ -38,10 +38,25 @@ public:
         template <typename... ArgTs>
         entity_node_t(ArgTs&&... args) : data(std::forward<ArgTs>(args)...) {}
         entity_t* ptr() { return &data; }
+        const entity_t* ptr() const { return &data; }
     };
 
     // entity_t为标准布局类型，其指针可以直接与hitbox的互转
     static_assert(std::is_standard_layout_v<entity_t>);
+
+    struct entity_node_ptr_eq {
+        using is_transparent = void;
+        bool operator()(const entity_node_t* n1, const entity_node_t* n2) const noexcept { return n1->ptr() == n2->ptr(); }
+        bool operator()(const entity_node_t* node, const entity_t* ent) const noexcept { return node->ptr() == ent; }
+        bool operator()(const entity_t* ent, const entity_node_t* node) const noexcept { return (*this)(node, ent); }
+    };
+    struct entity_node_ptr_hash {
+        using is_transparent = void;
+        size_t operator()(const entity_node_t* n) const noexcept { return std::hash<const entity_t*>{}(n->ptr()); }
+        size_t operator()(const entity_t* ent) const noexcept { return std::hash<const entity_t*>{}(ent); }
+    };
+    template <typename T>
+    using entity_node_ptr_uset = std::unordered_set<T, entity_node_ptr_hash, entity_node_ptr_eq>;
 
 protected:
     grid_loose_quadtree boxtree;

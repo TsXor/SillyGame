@@ -1,0 +1,4 @@
+file: "enemy_bullet.png"
+sprites:
+    -   name: "enemy_bullet"
+        uv: [0, 16, 0, 16]

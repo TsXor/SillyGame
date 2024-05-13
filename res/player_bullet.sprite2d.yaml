@@ -1,0 +1,4 @@
+file: "player_bullet.png"
+sprites:
+    -   name: "player_bullet"
+        uv: [0, 16, 0, 16]

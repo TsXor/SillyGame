@@ -1,0 +1,4 @@
+file: "player_plane.png"
+sprites:
+    -   name: "player_plane"
+        uv: [0, 64, 0, 64]

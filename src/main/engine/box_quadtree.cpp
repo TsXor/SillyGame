@@ -72,6 +72,7 @@ void grid_loose_quadtree::move_box(hitbox* hbox, const basics::vec2& v) {
     hbox->offset += v;
     auto new_idx = box_idx(hbox->abs_box());
     auto it = vtree.right.find(hbox);
+    if (it == decltype(it)() || it == vtree.right.end()) { return; }
     if (it->second != new_idx) { vtree.right.replace_data(it, new_idx); }
 }
 

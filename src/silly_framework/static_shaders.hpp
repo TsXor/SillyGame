@@ -9,11 +9,14 @@
 namespace shaders {
 
 namespace files {
-gl::ShaderSource& use_texture();
+gl::ShaderSource& use_color();
 gl::ShaderSource& transform_shape();
+gl::ShaderSource& use_texture();
+gl::ShaderSource& transform_shape_notex();
 } // namespace files
 
 namespace programs {
+gl::Program& fill();
 gl::Program& sprite();
 } // namespace programs
 
