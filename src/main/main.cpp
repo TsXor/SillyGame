@@ -6,7 +6,6 @@
 #include "silly_framework/rewheel/os_misc.hpp"
 #include "silly_framework/settings/logger.hpp"
 #include "activities/avg_scene.hpp"
-#include "activities/plane_battle_scene.hpp"
 
 namespace sf = silly_framework;
 
@@ -24,8 +23,7 @@ int main(int argc, char** argv) {
     sf::logger::make(project_name, logfile_path.string());
     // 启动主窗口
     sf::game_window(project_name.c_str(), 60, std::chrono::milliseconds(10))
-        //.run<acts::avg_scene>("dorm_room", std::nullopt, "311");
-        .run<acts::plane_battle_scene>();
+        .run<acts::avg_scene>("dorm_room", std::nullopt, "508");
     // 再见...
     return 0;
 }

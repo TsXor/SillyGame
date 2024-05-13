@@ -60,6 +60,7 @@ public:
     entity_comp_t sprites_sorter = default_sprites_sorter();
     std::optional<map_render_data> bound_map;
     eng::basics::vec2 velocity_direction = {0, 0};
+    std::function<void()> cust_render;
     std::any script_data;
 
 

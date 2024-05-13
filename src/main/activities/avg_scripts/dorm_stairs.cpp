@@ -1,5 +1,6 @@
 #include "../avg_scripts.hpp"
 #include "./utils.hpp"
+#include "activities/render_utils.hpp"
 #include "static_sprites.hpp"
 #include "static_maps.hpp"
 
@@ -18,6 +19,10 @@ void acts::avg_scripts::dorm_stairs(avg_scene& self, const std::optional<eng::ba
 
         self.bound_map.emplace(&maps::dorm_stairs(), 4.0);
         self.bound_sprites[person.ptr()] = {&sprites::container_small(), 4.0, {0, -36}};
+
+        self.cust_render = [&, floor_number]() {
+            render_number(self.parent, floor_number, {24, 48, 24, 72});
+        };
 
         // 地图边界固定阻挡物
         simulator::entity_node_t obstacles[] = {

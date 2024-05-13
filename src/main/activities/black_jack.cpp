@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <random>
 #include "./black_jack.hpp"
+#include "activities/render_utils.hpp"
 
 using namespace acts;
 using namespace silly_framework;
@@ -148,28 +149,17 @@ black_jack_scene::black_jack_scene(game_window &window) : base_activity(window) 
 
 black_jack_scene::~black_jack_scene() {}
 
-void black_jack_scene::render_img(const std::string& path, const glut::position& pos) {
-    auto&& [vs_w, vs_h] = parent.renman.vs_size();
-    auto img = parent.texman.get_texture(path);
-    if (img != nullptr) { parent.renman.blit(img->tex, glut::xy_trans(pos, vs_w, vs_h, glut::eye4), glut::full_uv); }
-}
-
-void black_jack_scene::render_bg(const std::string& path) {
-    auto img = parent.texman.get_texture(path);
-    if (img != nullptr) { parent.renman.blit(img->tex, glut::full_xy, glut::full_uv); }
-}
-
 void black_jack_scene::render() {
-    render_bg("black_jack_table.png");
+    render_bg(parent, "black_jack_table.png");
     if (state) {
         auto render_poker = [&](size_t card_id, const glut::position& pos) {
-            render_img(std::format("pokers/{}.png", card_id), pos);
+            render_img(parent, std::format("pokers/{}.png", card_id), pos);
         };
         auto render_number = [&](ssize_t n, const glut::position& pos) {
             auto ns = std::to_string(n);
             auto rpos = pos;
             for (auto&& nc : ns) {
-                render_img(std::format("power_numbers/{}.png", nc), rpos);
+                render_img(parent, std::format("power_numbers/{}.png", nc), rpos);
                 rpos += glut::coord(pos.width(), 0);
             }
         };
@@ -186,7 +176,7 @@ void black_jack_scene::render() {
             render_poker(state->player_cards[i], poker_pos);
         }
         bool btn_selected = select_cursor == state->player_cards.size();
-        render_img(btn_selected ? "go_button_focus.png" : "go_button_idle.png", {886, 992, 598, 662});
+        render_img(parent, btn_selected ? "go_button_focus.png" : "go_button_idle.png", {886, 992, 598, 662});
 
         render_number(state->opponent_success, {640, 688, 64, 160});
         render_number(state->player_success, {900, 948, 480, 576});
@@ -205,8 +195,8 @@ void black_jack_scene::render() {
         if (state->finished()) {
             using enum black_jack_state::result_code;
             auto result = state->status();
-            if (result == LOSE || result == TIE) { render_img("trophy.png", {288, 416, 32, 160}); }
-            if (result == WIN || result == TIE) { render_img("trophy.png", {32, 160, 512, 640}); }
+            if (result == LOSE || result == TIE) { render_img(parent, "trophy.png", {288, 416, 32, 160}); }
+            if (result == WIN || result == TIE) { render_img(parent, "trophy.png", {32, 160, 512, 640}); }
         }
     }
 }

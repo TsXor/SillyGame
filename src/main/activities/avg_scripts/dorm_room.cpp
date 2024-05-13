@@ -1,5 +1,7 @@
 #include "../avg_scripts.hpp"
 #include "./utils.hpp"
+#include "activities/render_utils.hpp"
+#include "activities/plane_battle_scene.hpp"
 #include "static_sprites.hpp"
 #include "static_maps.hpp"
 
@@ -46,6 +48,10 @@ void acts::avg_scripts::dorm_room(avg_scene& self, const std::optional<eng::basi
         self.bound_map.emplace(&maps::dorm_room(), 4.0);
         self.bound_sprites[person.ptr()] = {&sprites::container_small(), 4.0, {0, -36}};
 
+        self.cust_render = [&, room_number]() {
+            render_number(self.parent, room_number, {24, 48, 24, 72});
+        };
+
         // 地图边界固定阻挡物
         simulator::entity_node_t obstacles[] = {
             {basics::aabb{0, 128, 0, 1056}},
@@ -74,6 +80,13 @@ void acts::avg_scripts::dorm_room(avg_scene& self, const std::optional<eng::basi
         if (room_number == 311) {
             colls[{person.ptr(), table_2.ptr()}] = [&](){ self.next<acts::avg_scene>("black_jack_entry", points.black_jack_entry_left); };
             colls[{person.ptr(), table_3.ptr()}] = [&](){ self.next<acts::avg_scene>("dorm_room", std::nullopt, "508"); };
+        }
+        if (room_number == 238) {
+            colls[{person.ptr(), table_2.ptr()}] = [&](){
+                person.data.velocity = {0, 0};
+                self.simu->teleport_entity_center(person.ptr(), points.dorm_room_default);
+                self.call<acts::plane_battle_scene>();
+            };
         }
 
         while (true) {

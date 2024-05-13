@@ -2,6 +2,7 @@
 #include <random>
 #include <format>
 #include "./plane_battle_scene.hpp"
+#include "activities/render_utils.hpp"
 #include "static_sprites.hpp"
 #include "static_maps.hpp"
 
@@ -212,21 +213,6 @@ void plane_battle_scene::on_tick(double this_time, double last_time) {
         }
     }
 }
-
-static inline void render_img(game_window& wnd, const std::string& path, const glut::position& pos) {
-    auto&& [vs_w, vs_h] = wnd.renman.vs_size();
-    auto img = wnd.texman.get_texture(path);
-    if (img != nullptr) { wnd.renman.blit(img->tex, glut::xy_trans(pos, vs_w, vs_h, glut::eye4), glut::full_uv); }
-}
-
-static inline void render_number(game_window& wnd, ssize_t n, const glut::position& pos) {
-    auto ns = std::to_string(n);
-    auto rpos = pos;
-    for (auto&& nc : ns) {
-        render_img(wnd, std::format("power_numbers/{}.png", nc), rpos);
-        rpos += glut::coord(pos.width(), 0);
-    }
-};
 
 void plane_battle_scene::render() {
     gl::ClearColor(0, 0, 0, 0);

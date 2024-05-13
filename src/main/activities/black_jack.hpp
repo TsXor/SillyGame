@@ -43,9 +43,6 @@ public:
 
     black_jack_scene(sf::game_window& window);
     ~black_jack_scene();
-
-    void render_bg(const std::string& path);
-    void render_img(const std::string& path, const sf::glut::position& pos);
     
     void render() override;
     void on_key_change() override;

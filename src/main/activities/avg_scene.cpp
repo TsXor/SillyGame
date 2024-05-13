@@ -93,4 +93,5 @@ void avg_scene::render() {
         auto offset = ent->hbox.offset / spr.scalev;
         spr.render(parent, glut::coord{int(offset.x), int(offset.y)} - camera_pos);
     }
+    if (cust_render) { cust_render(); }
 }
