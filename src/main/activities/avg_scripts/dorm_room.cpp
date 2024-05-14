@@ -77,6 +77,9 @@ void acts::avg_scripts::dorm_room(avg_scene& self, const std::optional<eng::basi
             { {person.ptr(), back_door.ptr()}, [&](){ self.next<acts::avg_scene>("dorm_balcony", points.dorm_balcony_door, std::to_string(room_number)); } }
         };
 
+        if (room_number == 605) {
+            colls[{person.ptr(), table_1.ptr()}] = [&](){ self.next<acts::avg_scene>("genshin_pursuit_entry", points.genshin_pursuit_entry_bottom); };
+        }
         if (room_number == 311) {
             colls[{person.ptr(), table_2.ptr()}] = [&](){ self.next<acts::avg_scene>("black_jack_entry", points.black_jack_entry_left); };
             colls[{person.ptr(), table_3.ptr()}] = [&](){ self.next<acts::avg_scene>("dorm_room", std::nullopt, "508"); };

@@ -13,5 +13,7 @@ const silly_framework::map2d& dorm_stairs();
 const silly_framework::map2d& dorm_stairs_bottom();
 const silly_framework::map2d& dorm_stairs_middle();
 const silly_framework::map2d& dorm_stairs_top();
+const silly_framework::map2d& genshin_pursuit_author();
 const silly_framework::map2d& genshin_pursuit_entry();
+const silly_framework::map2d& genshin_pursuit_main();
 } // namespace maps

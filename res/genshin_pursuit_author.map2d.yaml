@@ -1,0 +1,5 @@
+file: "genshin_pursuit_author.png"
+name: "genshin_pursuit_author"
+blocks:
+    -   uv: [0, 128, 0, 128]
+        at: [0, 0]

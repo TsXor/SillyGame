@@ -58,6 +58,16 @@ static inline constexpr struct {
     eng::basics::vec2 black_jack_entry_default = {512, 352};
     eng::basics::vec2 black_jack_entry_left = {36, 352};
     eng::basics::vec2 black_jack_entry_right = {988, 352};
+
+    eng::basics::vec2 genshin_pursuit_entry_default = {256, 432};
+    eng::basics::vec2 genshin_pursuit_entry_top = {256, 228};
+    eng::basics::vec2 genshin_pursuit_entry_bottom = {256, 604};
+
+    eng::basics::vec2 genshin_pursuit_author_default = {384, 256};
+    eng::basics::vec2 genshin_pursuit_author_right = {476, 256};
+
+    eng::basics::vec2 genshin_pursuit_main_default = {1024, 1152};
+    eng::basics::vec2 genshin_pursuit_main_bottom = {1024, 1388};
 } points;
 
 #define AVG_SCRIPT_ARGS avg_scene& self, const std::optional<eng::basics::vec2>& spawn, const std::string& arg
@@ -71,6 +81,9 @@ void dorm_stairs(AVG_SCRIPT_ARGS);
 void dorm_stairs_middle(AVG_SCRIPT_ARGS);
 void dorm_stairs_bottom(AVG_SCRIPT_ARGS);
 void black_jack_entry(AVG_SCRIPT_ARGS);
+void genshin_pursuit_entry(AVG_SCRIPT_ARGS);
+void genshin_pursuit_author(AVG_SCRIPT_ARGS);
+void genshin_pursuit_main(AVG_SCRIPT_ARGS);
 
 #undef AVG_SCRIPT_ARGS
 

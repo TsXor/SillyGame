@@ -86,10 +86,26 @@ const map2d& maps::dorm_stairs_top() {
     );
     return map;
 }
+const map2d& maps::genshin_pursuit_author() {
+    static const map2d map("genshin_pursuit_author.png",
+        map_blocks{
+            {{0, 128, 0, 128}, {0, 0}}
+        }
+    );
+    return map;
+}
 const map2d& maps::genshin_pursuit_entry() {
     static const map2d map("genshin_pursuit_entry.png",
         map_blocks{
-            {{0, 128, 0, 256}, {0, 0}}
+            {{0, 128, 0, 160}, {0, 0}}
+        }
+    );
+    return map;
+}
+const map2d& maps::genshin_pursuit_main() {
+    static const map2d map("genshin_pursuit_main.png",
+        map_blocks{
+            {{0, 512, 0, 384}, {0, 0}}
         }
     );
     return map;
