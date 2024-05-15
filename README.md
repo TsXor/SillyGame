@@ -27,6 +27,7 @@ python select_pack.py build/RelWithDebInfo
 - 编译器需要支持`C++20`，所以请不要使用上古版本`Visual Studio`。
   - 注：gcc 11.2.0由于`format`不在标准库中应该也不能编译，直接使用`fmtlib`可以解决。
 - 写的时候是按跨平台写的，但是我没拿其他平台测试过。
+- 即使你是从gitee镜像克隆本仓库，你仍需要一些github加速手段来同步子模块。
 
 ## 随机冷知识
 - 本项目没有使用Qt、MFC、EasyX等框架。
